@@ -121,6 +121,7 @@ functions
 isDay: Month * Day * Year -> bool
 isDay(month, day, year) ==
     if day > daysInMonth(month, year) then false
+    else if day < 1 then false
     else true;
 
 -- isDay returns true if dayOfYear is a valid day of year given the specified
