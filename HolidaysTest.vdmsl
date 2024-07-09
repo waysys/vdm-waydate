@@ -1,0 +1,387 @@
+-- ----------------------------------------------------------------------------
+--
+-- HolidaysTest - a module to facilitate tests of the Holidays module.
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 09-Dec-2023
+--
+-- This module helps test the Holiday modules
+-- ----------------------------------------------------------------------------
+module HolidaysTest
+
+imports
+    from Date 
+        types
+            Month renamed Month;
+            Day   renamed Day;
+            Year  renamed Year;
+            Date  renamed Date;
+
+        functions
+            -- Properties
+            getDay: Date -> Day;
+            getMonth: Date -> Month;
+            getYear: Date -> Year;        
+            create: Month * Day * Year -> Date;
+            intToMonth: int -> Month;
+            intToDay: int -> Day;
+            intToYear: int -> Year,
+
+   from Week
+        types
+            DayOfWeek renamed DayOfWeek;
+
+        values
+            daysOfWeek;
+
+        functions
+            dayOfWeek: Date -> DayOfWeek, 
+
+    from Holidays
+        types
+            Holiday renamed Holiday;
+
+        functions
+            -- holiday functions
+            newYearsDay: Year -> Holiday;
+            martinLutherKingBirthday: Year -> Holiday;
+            washingtonsBirthday: Year -> Holiday;
+            memorialDay: Year -> Holiday;
+            easter: Year -> Holiday;
+            juneteenth: Year -> Holiday;
+            independenceDay: Year -> Holiday;
+            laborDay: Year -> Holiday;
+            columbusDay: Year -> Holiday;
+            veteransDay: Year -> Holiday;
+            thanksgiving: Year -> Holiday;
+            christmas: Year -> Holiday;            
+
+           -- properties
+            getName: Holiday -> seq of char;
+            getActualDate: Holiday -> Date;
+            getObservedDate: Holiday -> Date;
+            getObservedDayOfWeek: Holiday -> DayOfWeek;
+
+            -- support functions
+            observedDate: Date -> Date;
+            nthDayOfMonth: Month * DayOfWeek * nat1 * Year -> Date;
+            dayOfWeekAfter: Date * DayOfWeek -> Date;
+
+exports
+    functions
+        testOfNewYearsDay: () -> bool;
+        testOfNewYearsDay1: () -> bool
+        testOfNewYearsDay2: () -> bool
+        testAll: () -> bool;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+values
+-- ----------------------------------------------------------------------------
+
+sunday = Week`daysOfWeek(1);
+monday = Week`daysOfWeek(2);
+thursday = Week`daysOfWeek(5);
+friday = Week`daysOfWeek(6);
+
+january = Date`intToMonth(1);
+february = Date`intToMonth(2);
+april = Date`intToMonth(4);
+may = Date`intToMonth(5);
+june = Date`intToMonth(6);
+july = Date`intToMonth(7);
+september = Date`intToMonth(9);
+october = Date`intToMonth(10);
+november = Date`intToMonth(11);
+december = Date`intToMonth(12)
+
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- testOfNewYearsDay checks the definition of New Year's Day for an observed
+-- date on the Friday before.
+testOfNewYearsDay: () -> bool
+testOfNewYearsDay() ==
+    let
+        month = january,
+        day = Date`intToDay(1),
+        year = Date`intToYear(2022),
+        newYears = Date`create(month, day, year),
+        observedDate = Holidays`observedDate(newYears),
+        newYearsHoliday = Holidays`newYearsDay(year)
+    in 
+        Date`getMonth(observedDate) = Date`intToMonth(12) and 
+        Date`getYear(observedDate) = Date`intToYear(2021) and 
+        Date`getDay(observedDate) = Date`intToDay(31) and 
+        Holidays`getActualDate(newYearsHoliday) = newYears and 
+        Holidays`getObservedDate(newYearsHoliday) = observedDate and 
+        Holidays`getName(newYearsHoliday) = "New Year's Day" and
+        Holidays`getObservedDayOfWeek(newYearsHoliday) = friday;
+
+
+-- testOfNewYearsDay1 checks the definition of New Year's Day for an observed
+-- date on the Monday after. 
+testOfNewYearsDay1: () -> bool
+testOfNewYearsDay1() ==
+    let
+        month = january,
+        day = Date`intToDay(1),
+        year = Date`intToYear(2023),
+        newYears = Date`create(month, day, year),
+        observedDate = Holidays`observedDate(newYears),
+        newYearsHoliday = Holidays`newYearsDay(year)
+    in 
+        Date`getMonth(observedDate) = Date`intToMonth(1) and 
+        Date`getYear(observedDate) = Date`intToYear(2023) and 
+        Date`getDay(observedDate) = Date`intToDay(2) and
+        Holidays`getActualDate(newYearsHoliday) = newYears and 
+        Holidays`getObservedDate(newYearsHoliday) = observedDate and 
+        Holidays`getName(newYearsHoliday) = "New Year's Day" and
+        Holidays`getObservedDayOfWeek(newYearsHoliday) = monday        
+        ;     
+
+-- testOfNewYearsDay2 checks the definition of New Year's Day that 
+-- falls on a weekday.
+testOfNewYearsDay2: () -> bool
+testOfNewYearsDay2() ==
+    let
+        month = january,
+        day = Date`intToDay(1),
+        year = Date`intToYear(2021),
+        newYears = Date`create(month, day, year),
+        observedDate = Holidays`observedDate(newYears),
+        newYearsHoliday = Holidays`newYearsDay(year)
+    in 
+        Date`getMonth(observedDate) = Date`intToMonth(1) and 
+        Date`getYear(observedDate) = Date`intToYear(2021) and 
+        Date`getDay(observedDate) = Date`intToDay(1) and
+        Holidays`getActualDate(newYearsHoliday) = newYears and 
+        Holidays`getObservedDate(newYearsHoliday) = observedDate and 
+        Holidays`getName(newYearsHoliday) = "New Year's Day" and
+        Holidays`getObservedDayOfWeek(newYearsHoliday) = friday;  
+
+-- testOf4thThursday checks the computation of the date of the 4th 
+-- Thursday of November.
+testOf4thThursday: () -> bool
+testOf4thThursday() == 
+    let
+        month = november,
+        year = Date`intToYear(2021),
+        date = Holidays`nthDayOfMonth(month, thursday, 4, year)
+    in 
+        Date`getDay(date) = Date`intToDay(25) and 
+        Date`getMonth(date) = month and
+        Date`getYear(date) = year and 
+        Week`dayOfWeek(date) = thursday;
+
+-- testOfFirstMonday checks the computation of the first day of
+-- the month.
+testOfFirstMonday: () -> bool 
+testOfFirstMonday() == 
+    let 
+        month = november,
+        year = Date`intToYear(2021),
+        date = Holidays`nthDayOfMonth(month, monday, 1, year)
+    in 
+        Date`getDay(date) = Date`intToDay(1) and 
+        Date`getMonth(date) = month and
+        Date`getYear(date) = year and 
+        Week`dayOfWeek(date) = monday;
+
+-- testOf3rdMonday checks the computation of the third monday 
+testOf3rdMonday: () -> bool
+testOf3rdMonday() == 
+   let 
+        month = november,
+        year = Date`intToYear(2021),
+        date = Holidays`nthDayOfMonth(month, monday, 3, year)
+    in 
+        Date`getDay(date) = Date`intToDay(15) and 
+        Date`getMonth(date) = month and
+        Date`getYear(date) = year and 
+        Week`dayOfWeek(date) = monday;
+
+-- testOfMartinLutherKingBirthday checks the computaition of this
+-- holiday.
+testOfMartinLutherKingBirthday: () -> bool
+testOfMartinLutherKingBirthday() ==
+    let
+         year = Date`intToYear(2023),
+         month = january,  
+         day = Date`intToDay(16),
+         expectedDate = Date`create(month, day, year),
+         mlkBirthday = Holidays`martinLutherKingBirthday(year)
+    in
+        expectedDate = mlkBirthday.actualDate;
+
+-- testOfWashingtonsBirthday checks the computaition of this
+-- holiday.
+testOfWashingtonsBirthday: () -> bool
+testOfWashingtonsBirthday() ==
+    let
+         year = Date`intToYear(2023),
+         month = february,  
+         day = Date`intToDay(20),
+         expectedDate = Date`create(month, day, year),
+         mlkBirthday = Holidays`washingtonsBirthday(year)
+    in
+        expectedDate = mlkBirthday.actualDate;
+
+-- testOfMemorialDay checks the computation of this holiday.
+testOfMemorialDay: () -> bool
+testOfMemorialDay() ==
+    let 
+        year = Date`intToYear(2023),
+        month = may,  
+        day = Date`intToDay(29),
+        expectedDate = Date`create(month, day, year),
+        memorialDay = Holidays`memorialDay(year)
+    in 
+        expectedDate = memorialDay.actualDate;
+
+-- testOfEaster checks the computation of Easter
+testOfEaster: () -> bool
+testOfEaster() == 
+    let 
+        year = Date`intToYear(2023),
+        month = april,  
+        day = Date`intToDay(9),
+        expectedDate = Date`create(month, day, year),
+        easter = Holidays`easter(year)
+    in 
+        expectedDate = easter.actualDate;    
+
+-- testOfJuneteenth checks the computation of this holiday.
+testOfJuneteenth: () -> bool
+testOfJuneteenth() ==
+   let 
+        year = Date`intToYear(2021),
+        month = june,  
+        day = Date`intToDay(18),
+        expectedDate = Date`create(month, day, year),
+        juneteenth = Holidays`juneteenth(year)
+    in 
+        expectedDate = juneteenth.observedDate;
+
+-- testOfIndependenceDay checks the computation of this holiday.
+testOfIndependenceDay: () -> bool
+testOfIndependenceDay() == 
+   let 
+        year = Date`intToYear(2021),
+        month = july,  
+        day = Date`intToDay(5),
+        expectedDate = Date`create(month, day, year),
+        independenceDay = Holidays`independenceDay(year)
+    in 
+        expectedDate = independenceDay.observedDate;
+
+-- testOfLaborDay checks the computation of this holiday.
+testOfLaborDay: () -> bool 
+testOfLaborDay() == 
+  let 
+        year = Date`intToYear(2023),
+        month = september,  
+        day = Date`intToDay(4),
+        expectedDate = Date`create(month, day, year),
+        laborDay = Holidays`laborDay(year)
+    in 
+        expectedDate = laborDay.observedDate;
+
+-- testOfColumbusDay checks the computation of this holiday.
+testOfColumbusDay: () -> bool 
+testOfColumbusDay() == 
+  let 
+        year = Date`intToYear(2023),
+        month = october,  
+        day = Date`intToDay(9),
+        expectedDate = Date`create(month, day, year),
+        columbusDay = Holidays`columbusDay(year)
+    in 
+        expectedDate = columbusDay.observedDate;
+
+-- testOfVeteransDay checks the computation of this holiday.
+testOfVeteransDay: () -> bool 
+testOfVeteransDay() == 
+  let 
+        year = Date`intToYear(2023),
+        month = november,  
+        day = Date`intToDay(10),
+        expectedDate = Date`create(month, day, year),
+        veteransDay = Holidays`veteransDay(year)
+    in 
+        expectedDate = veteransDay.observedDate;
+
+-- testOfThanksgiving checks the computation of this holiday.
+testOfThanksgiving: () -> bool 
+testOfThanksgiving() == 
+  let 
+        year = Date`intToYear(2023),
+        month = november,  
+        day = Date`intToDay(23),
+        expectedDate = Date`create(month, day, year),
+        thanksgiving = Holidays`thanksgiving(year)
+    in 
+        expectedDate = thanksgiving.observedDate;
+
+-- testOfChristmas checks the computation of this holiday.
+testOfChristmas: () -> bool 
+testOfChristmas() == 
+  let 
+        year = Date`intToYear(2023),
+        month = december,  
+        day = Date`intToDay(25),
+        expectedDate = Date`create(month, day, year),
+        christmas = Holidays`christmas(year)
+    in 
+        expectedDate = christmas.observedDate;
+
+-- testOfDayOfWeekAfter checks the computation of the date with the
+-- specified day of the week after the base date. 
+testOfDayOfWeekAfter: () -> bool 
+testOfDayOfWeekAfter() ==
+    let 
+        month = april,
+        year = Date`intToYear(2023), 
+        day = Date`intToDay(9),
+        baseDate = Date`create(month, day, year),
+        dateAfter = Holidays`dayOfWeekAfter(baseDate, sunday) 
+    in 
+        Date`getMonth(dateAfter) = april and 
+        Date`getDay(dateAfter) = Date`intToDay(16) and 
+        Date`getYear(dateAfter) = year;
+        
+
+-- Summary test
+
+-- testAll runs all the tests
+testAll: () -> bool
+testAll() ==
+    let
+        test0 = testOfNewYearsDay(),
+        test1 = testOfNewYearsDay1(),
+        test2 = testOfNewYearsDay2(),
+        test3 = testOf4thThursday(),
+        test4 = testOfFirstMonday(),
+        test5 = testOf3rdMonday(),
+        test6 = testOfMartinLutherKingBirthday(),
+        test7 = testOfWashingtonsBirthday(),
+        test8 = testOfMemorialDay(),
+        test9 = testOfJuneteenth(),
+        test10 = testOfIndependenceDay(),
+        test11 = testOfLaborDay(),
+        test12 = testOfColumbusDay(),
+        test13 = testOfVeteransDay(),
+        test14 = testOfThanksgiving(),
+        test15 = testOfChristmas(),
+        test16 = testOfDayOfWeekAfter(),
+        test17 = testOfEaster()
+    in 
+        test0  and test1  and test2  and test3  and test4  and 
+        test5  and test6  and test7  and test8  and test9  and 
+        test10 and test11 and test12 and test13 and test14 and 
+        test15 and test16 and test17
+
+
+end HolidaysTest

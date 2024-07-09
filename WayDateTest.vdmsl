@@ -1,0 +1,170 @@
+-- ----------------------------------------------------------------------------
+--
+-- DateTest - a module to facilitate tests of Date
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 19 Nov 2023
+--
+-- This module helps test the combination of AbsoluteDate and Date
+-- ----------------------------------------------------------------------------
+
+module DateTest
+
+imports 
+    from Date 
+        types
+            Month renamed Month;
+            Day   renamed Day;
+            Year  renamed Year;
+            Date  renamed Date;
+            DayOfYear renamed DayOfYear;
+
+        functions
+            createFromDayOfYear: DayOfYear * Year -> Date;
+            create: Month * Day * Year -> Date;
+            dayOfYear: Date -> DayOfYear;
+            maxDate: Date * Date -> Date;
+            minDate: Date * Date -> Date;
+            after: Date * Date -> bool;
+            before: Date * Date -> bool;
+            intToMonth: int -> Month;
+            intToDay: int -> Day;
+            intToYear: int -> Year;
+
+        values
+            MinDate;
+            MaxDate,
+
+    from AbsoluteDate
+        types
+            AbsoluteDate renamed AbsoluteDate;
+
+        values
+            MaxAbsoluteDate;
+            MinAbsoluteDate;
+
+        functions
+            -- conversions
+            convertToDate: AbsoluteDate -> Date`Date;
+            convertToAbsoluteDate: Date`Date -> AbsoluteDate
+            natToAbsoluteDate: nat1 -> AbsoluteDate,
+
+    from Week 
+        types
+            DayOfWeek renamed DayOfWeek;
+
+        functions
+            dayOfWeek: Date -> DayOfWeek
+            weekDay: nat1 -> DayOfWeek;
+
+exports
+    functions
+        testDayOfYear: () -> bool;
+        testConvertToDate: () -> bool;
+        testConvertToAbsoluteDate: () -> bool;
+        testDayOfWeek: () -> bool;
+        testConvertFromAbsoluteDate: () -> bool;
+        testMaxAndMinDate: () -> bool;
+        testAll: () -> bool;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+functions
+-------------------------------------------------------------------------------
+
+-- Test of Date functions
+
+-- Test of day of year calculations
+
+testDayOfYear: () -> bool
+testDayOfYear() ==
+    let
+        month = Date`intToMonth(10),
+        day = Date`intToDay(31),
+        year = Date`intToYear(2022),
+        startDate = Date`create(month, day, year),
+        dayOfYear = Date`dayOfYear(startDate)
+    in
+        startDate = Date`createFromDayOfYear(dayOfYear, year);
+
+-- Tests of absolute date conversion
+
+-- Example of converting an absolute date 20 to a date (20-Jan-1601)
+testConvertToDate: () -> bool
+testConvertToDate() ==
+    let
+        absoluteDate : AbsoluteDate = AbsoluteDate`natToAbsoluteDate(20),
+        month  = Date`intToMonth(1),
+        day    = Date`intToDay(20),
+        year   = Date`intToYear(1601),
+        expectedDate = Date`create(month, day, year)
+    in
+        AbsoluteDate`convertToDate(absoluteDate) = expectedDate;
+
+-- Test certain facts about absolute date:
+--    absolute date of 1-Jan-1601 = 1
+--    absolute date of 12-Dec-3999 = 876216
+testConvertToAbsoluteDate: () -> bool
+testConvertToAbsoluteDate() ==
+    let
+        maxAbsoluteDate = AbsoluteDate`convertToAbsoluteDate(Date`MaxDate),
+        minAbsoluteDate = AbsoluteDate`convertToAbsoluteDate(Date`MinDate)
+    in
+        (minAbsoluteDate = AbsoluteDate`MinAbsoluteDate) and (maxAbsoluteDate = AbsoluteDate`MaxAbsoluteDate);
+
+-- Test certain facts about dates and absolute dates
+--    convertToDate(1) = MinDate
+--    convertToDate(MaxAbsoluteDate) = MaxDate
+testConvertFromAbsoluteDate: () -> bool
+testConvertFromAbsoluteDate() ==
+    let
+        date1 = AbsoluteDate`convertToDate(AbsoluteDate`MinAbsoluteDate),
+        date2 = AbsoluteDate`convertToDate(AbsoluteDate`MaxAbsoluteDate)
+    in
+        (date1 = Date`MinDate) and (date2 = Date`MaxDate);
+
+-- Test date comparisons
+
+-- Test maxDate and minDate
+testMaxAndMinDate: () -> bool
+testMaxAndMinDate() ==
+    let
+        date1 = Date`minDate(Date`MinDate, Date`MaxDate),
+        date2 = Date`maxDate(Date`MinDate, Date`MaxDate)
+    in 
+        (date1 = Date`MinDate) and (date2 = Date`MaxDate) and 
+        Date`after(date2, date1) and Date`before(date1, date2);
+
+-- Tests of Week module
+
+testDayOfWeek: () -> bool
+testDayOfWeek() ==
+    let
+        month  = Date`intToMonth(11),
+        day    = Date`intToDay(23),
+        year   = Date`intToYear(2023),
+        date   = Date`create(month, day, year),
+        thursday = Week`weekDay(4)
+    in 
+        Week`dayOfWeek(date) = thursday;  
+
+-- Summarizations of tests
+
+testAll: () -> bool
+testAll() ==
+    let
+        sumTestDayOfYear = testDayOfYear(),
+        sumTestConvertToDate = testConvertToDate(),
+        sumTestConvertToAbsoluteDate = testConvertToAbsoluteDate(),
+        sumTestConvertFromAbsoluteDate = testConvertFromAbsoluteDate(),
+        sumTestMaxAndMinDate = testMaxAndMinDate(),
+        sumTestDayOfWeek = testDayOfWeek() 
+    in 
+        sumTestDayOfYear and 
+        sumTestConvertToDate and
+        sumTestConvertToAbsoluteDate and 
+        sumTestConvertFromAbsoluteDate and 
+        sumTestMaxAndMinDate and 
+        sumTestDayOfWeek;
+        
+end DateTest

@@ -1,0 +1,79 @@
+-- ----------------------------------------------------------------------------
+--
+-- DateRange - date manipulation specification.
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 23 Nov 2023
+--
+-- The DateRange module extends the WayDate module to provide specifications
+-- for operations on date ranges.
+-- ----------------------------------------------------------------------------
+module DateRange
+
+imports
+    from Date 
+            types
+                Date  renamed Date;
+
+            functions
+                before: Date * Date -> bool;
+                after:  Date * Date -> bool;
+
+            operations
+                difference : Date * Date ==> int;
+ 
+exports
+    types
+        struct DateRange;
+
+    functions
+        create: Date * Date -> DateRange;
+        inRange: DateRange * Date -> bool; 
+        overlaps: DateRange * DateRange -> bool;   
+        size: DateRange -> nat1
+
+definitions
+
+-- ----------------------------------------------------------------------------
+types
+-- ----------------------------------------------------------------------------
+
+-- Date range is inclusive.  last is part of the date range.
+DateRange ::
+    first  : Date
+    last   : Date
+inv mk_DateRange(first, last) == first <= last;
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- Constructors
+
+-- create creates a date range from two days. 
+create: Date * Date -> DateRange
+create(date1, date2) ==
+    mk_DateRange(date1, date2);
+
+-- Comparisons
+
+-- inRange determines if a date is in the range.
+inRange: DateRange * Date -> bool
+inRange(dateRange, date) ==
+    if Date`before(date, dateRange.first) then false
+    elseif Date`after(date, dateRange.last) then false
+    else true;
+
+-- overlap returns true if one date range overlaps another
+overlaps: DateRange * DateRange -> bool
+overlaps(range1, range2) ==
+    if     Date`before(range1.last, range2.first) then false
+    elseif Date`after(range1.first, range2.last)  then false
+    else true;
+
+-- size calculates the number of consecutive dates in a date range
+size: DateRange -> nat1 
+size(range) ==
+    Date`difference(range.last, range.first) + 1;
+
+
+end DateRange

@@ -1,0 +1,126 @@
+-- ----------------------------------------------------------------------------
+--
+-- DateRangeTest - a module to facilitate tests of DateRange
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 23 Nov 2023
+--
+-- This module tests the functions 
+-- ----------------------------------------------------------------------------
+
+module DateRangeTest
+
+imports
+    from Date
+        types 
+            Month renamed Month;
+            Day renamed Day;
+            Year renamed Year;
+            Date renamed Date;
+
+        values
+            MinDate;
+            MaxDate;
+
+        functions
+            create: Month * Day * Year -> Date;
+            intToMonth: int -> Month;
+            intToDay: int -> Day;
+            intToYear: int -> Year,
+
+    from DateRange
+        types
+            DateRange renamed DateRange;
+
+        functions
+            create: Date * Date -> DateRange;
+            inRange: DateRange * Date -> bool; 
+            overlaps: DateRange * DateRange -> bool;
+            size: DateRange -> nat,
+
+    from AbsoluteDate
+        types
+            AbsoluteDate renamed AbsoluteDate;
+
+        values
+            MaxAbsoluteDate;  
+
+        functions
+            absoluteDateToNat: AbsoluteDate -> nat1;            
+
+exports
+    functions
+        testDateRange: () -> bool;
+        testOverlap: () -> bool;  
+        testSize: () -> bool;         
+
+definitions
+
+-- ----------------------------------------------------------------------------
+values
+-------------------------------------------------------------------------------
+
+maxDateRange = DateRange`create(Date`MinDate, Date`MaxDate);
+
+month1 = Date`intToMonth(6);
+day1 = Date`intToDay(1);
+year1 = Date`intToYear(2020);
+date1 = Date`create(month1, day1, year1);
+
+month2 = Date`intToMonth(10);
+day2 = Date`intToDay(1);
+year2 = Date`intToYear(2021);
+date2 = Date`create(month2, day2, year2);
+range1 = DateRange`create(date1, date2);
+
+month3 = Date`intToMonth(10);
+day3 = Date`intToDay(2);
+year3 = Date`intToYear(2021);
+date3 = Date`create(month3, day3, year3);
+
+month4 = Date`intToMonth(10);
+day4 = Date`intToDay(9);
+year4 = Date`intToYear(2021);
+date4 = Date`create(month4, day4, year4);
+range2 = DateRange`create(date3, date4);
+
+-- ----------------------------------------------------------------------------
+functions
+-------------------------------------------------------------------------------
+
+-- Test theorems about DateRange and inRange
+testDateRange: () -> bool
+testDateRange() ==
+    let 
+        -- all dates are in maxDateRange
+        dateInMaxRange = DateRange`inRange(maxDateRange, date1),
+        -- dateRange.first is in dateRange
+        firstInRange1 = DateRange`inRange(range1, date1),
+        -- dateRange.last is in dateRange
+        lastInRange1 = DateRange`inRange(range1, date2),
+        -- date1 not in range of range2
+        notInRange = not DateRange`inRange(range2, date1)
+    in 
+        dateInMaxRange and firstInRange1 and lastInRange1 and notInRange;
+
+-- Test theorems about overlap
+testOverlap: () -> bool
+testOverlap() ==
+    let
+        -- all date ranges overlap with the maxDateRange
+        overlapMaxRange = DateRange`overlaps(maxDateRange, range1),
+        -- all date ranges overlap with themselves
+        overlapSame = DateRange`overlaps(range1, range1),
+        -- no overlap
+        noOverlap = not DateRange`overlaps(range1, range2)
+    in 
+        overlapMaxRange and overlapSame and noOverlap;
+
+-- Test the size function
+testSize: () -> bool
+testSize() ==
+    let
+        maxSize = DateRange`size(maxDateRange)
+    in 
+        maxSize = AbsoluteDate`absoluteDateToNat(AbsoluteDate`MaxAbsoluteDate);
+
+end DateRangeTest

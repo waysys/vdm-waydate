@@ -1,0 +1,101 @@
+-- ----------------------------------------------------------------------------
+--
+-- Week - a module to handle weeks and week days.
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 19 Nov 2023
+--
+-- Week module defines a union type for the days of the week
+-- and calculations to determine the day of the week from a date.
+-- 
+-- ----------------------------------------------------------------------------
+
+module Week
+
+imports 
+    from Date 
+        types
+            Date renamed Date,
+
+    from AbsoluteDate
+        types
+            AbsoluteDate renamed AbsoluteDate;
+
+        functions
+            -- conversions
+            convertToAbsoluteDate: Date -> AbsoluteDate;
+            absoluteDateToNat: AbsoluteDate -> nat1;
+
+    exports
+        types
+            DayOfWeek;
+
+        values
+            weekDayNumber: map DayOfWeek to nat;
+            daysOfWeek: seq of DayOfWeek;
+
+        functions
+            dayOfWeek: Date -> DayOfWeek; 
+            weekDay: nat -> DayOfWeek;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+types
+-- ----------------------------------------------------------------------------
+
+DayOfWeek = <Sunday>
+    | <Monday>
+    | <Tuesday>
+    | <Wednesday>
+    | <Thursday>
+    | <Friday>
+    | <Saturday>;
+
+DaysOfWeek = seq of DayOfWeek;
+
+-- ----------------------------------------------------------------------------
+values
+-- ----------------------------------------------------------------------------
+
+daysOfWeek : DaysOfWeek = [
+    <Sunday>,
+    <Monday>,
+    <Tuesday>,
+    <Wednesday>,
+    <Thursday>,
+    <Friday>,
+    <Saturday>
+];
+
+weekDayNumber : map DayOfWeek to nat = {
+    <Sunday>    |-> 0,
+    <Monday>    |-> 1,
+    <Tuesday>   |-> 2,
+    <Wednesday> |-> 3,
+    <Thursday>  |-> 4,
+    <Friday>    |-> 5,
+    <Saturday>  |-> 6
+};
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- weekDay returns the enumerated value of the day of the week 
+-- based on the numeric day of the week.
+weekDay: nat -> DayOfWeek
+weekDay(dayNum) ==
+    daysOfWeek(dayNum + 1)
+pre dayNum >= 0 and dayNum < 7;
+
+-- dayOfWeek returns the day of the week for the specified date.
+dayOfWeek: Date -> DayOfWeek 
+dayOfWeek(date) ==
+    let
+        absoluteDate = AbsoluteDate`convertToAbsoluteDate(date),
+        index = AbsoluteDate`absoluteDateToNat(absoluteDate) mod 7
+    in
+        weekDay(index)
+
+
+end Week

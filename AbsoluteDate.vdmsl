@@ -1,0 +1,137 @@
+-- ----------------------------------------------------------------------------
+--
+-- AbsoluteDate - a date format for calculations
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 19 Nov 2023
+--
+-- Absolute date is a way of specifying a date with a single nat1 number. 1
+-- represent 1-Jan-1601.  Any date after that is an increment to that number.
+-- Absolute dates support rapid calculation with dates.
+-- ----------------------------------------------------------------------------
+
+module AbsoluteDate
+
+imports from Date 
+    types
+        Year renamed Year;
+        Date renamed Date;
+        DayOfYear renamed DayOfYear;
+
+    functions
+        createFromDayOfYear: DayOfYear * Year -> Date;
+        dayOfYear: Date -> DayOfYear;
+        intToDayOfYear: int -> DayOfYear;
+        intToYear: int -> Year;
+        dayOfYearToNat: DayOfYear -> nat1;
+        yearToNat: Year -> nat1
+
+exports 
+    types
+        AbsoluteDate;
+
+    values
+        MaxAbsoluteDate : AbsoluteDate;
+        MinAbsoluteDate : AbsoluteDate;
+
+    functions
+        -- conversions
+        convertToDate: AbsoluteDate -> Date`Date;
+        convertToAbsoluteDate: Date`Date -> AbsoluteDate;
+        natToAbsoluteDate: nat1 -> AbsoluteDate;
+        absoluteDateToNat: AbsoluteDate -> nat1;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+types
+-- ----------------------------------------------------------------------------
+
+AbsoluteDate = nat1
+inv absoluteDate == absoluteDate >= 1 and absoluteDate <= 876216
+
+-- ----------------------------------------------------------------------------
+values
+-- ----------------------------------------------------------------------------
+
+MinAbsoluteDate : AbsoluteDate = 1;
+MaxAbsoluteDate : AbsoluteDate = 876216;
+
+DaysIn400YearCycle = 400*365 + 100 - 3;
+DaysIn100YearCycle = 365*100 + 25 - 1;
+DaysIn4YearCycle   = 365*4 + 1;
+DaysIn1YearCycle   = 365;
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- convertFromDate returns a date corresponding to the specified
+-- absolute date
+convertToDate: AbsoluteDate -> Date
+convertToDate(absoluteDate) ==
+    let
+        year : Year = Date`intToYear(yearFromAbsolute(absoluteDate)),
+        dayYear : DayOfYear = Date`intToDayOfYear(absoluteDate - daysInPastYears(year))
+    in 
+        Date`createFromDayOfYear(dayYear, year);
+
+-- convertToAbsoluteDate returns an absolute date corresponding to the specified
+-- date.
+convertToAbsoluteDate: Date`Date -> AbsoluteDate
+convertToAbsoluteDate(date) ==
+    let
+        dayYear = Date`dayOfYearToNat(Date`dayOfYear(date))
+    in
+        dayYear + daysInPastYears(date.year);
+
+-- natToAbsoluteDate returns an absolute date confirming to the specified natural number.
+-- This function is needed in other modules that import this module.
+natToAbsoluteDate: nat1 -> AbsoluteDate
+natToAbsoluteDate(value) ==
+    value;
+
+-- absoluteDateToNat returns the natural number corresponding to the absolute date.
+-- The function is needed in client modules that do calculations with absolute dates.
+absoluteDateToNat: AbsoluteDate -> nat1
+absoluteDateToNat(absoluteDate) ==
+    absoluteDate;
+
+-- yearFromAbsolute calculates the year associated with the absolute date.
+--
+-- This algorithm is from:
+-- Edward M. Reingold and Nachum Dershowitz, Calendrical Calculations: The
+-- Millennium Edition (Cambridge, UK: Cambridge University Press, 2001) p. 52
+yearFromAbsolute: AbsoluteDate -> nat
+yearFromAbsolute(absoluteDate) ==
+    let
+        num400YearCycles = (absoluteDate - 1) div DaysIn400YearCycle,
+        remainder100 = (absoluteDate - 1) mod DaysIn400YearCycle,
+        num100YearCycles = remainder100 div DaysIn100YearCycle,
+        remainder4 = remainder100 mod DaysIn100YearCycle,
+        num4YearCycles = remainder4 div DaysIn4YearCycle,
+        remainder1 = remainder4 mod DaysIn4YearCycle,
+        num1YearCycles = remainder1 div DaysIn1YearCycle
+    in
+        if ((num100YearCycles = 4) or (num1YearCycles = 4)) then
+			400 * num400YearCycles + 100 * num100YearCycles + 4 * num4YearCycles + num1YearCycles + 1600
+		else
+			400 * num400YearCycles + 100 * num100YearCycles + 4 * num4YearCycles + num1YearCycles + 1601;
+
+
+-- daysInPastYears computes the number of days starting in 1-Jan-1601 and ending 
+-- in 31-Dec-year-1. Note that daysInPastYears(MinYear) = 0.
+--
+-- This alorithm is from:
+-- Edward M. Reingold and Nachum Dershowitz, Calendrical
+-- Calculations: The Millennium Edition (Cambridge, UK: Cambridge University Press, 2001) p. 51
+daysInPastYears: Year -> nat
+daysInPastYears(year) ==
+    let
+        y : nat = Date`yearToNat(year) - 1601
+    in
+        365 * y  -- days in prior years if all years had 365 days
+             + y div 4    -- plus julian leap days in prior years if all years divided by 4 were leap years
+             - y div 100  -- minus prior century years if all years divisible by 100 were not leap years
+             + y div 400; -- plus years divisible by 400 which have leap days
+
+end AbsoluteDate
