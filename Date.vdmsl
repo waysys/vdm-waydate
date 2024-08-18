@@ -50,7 +50,7 @@ exports types Month; Day; Year; DayOfYear; struct Date; Order;
 
         values      MaxYear : Year; MinYear: Year; MaxDate : Date; MinDate: Date;
 
-        operations  add : Date * int ==> Date;
+        operations  addDay : Date * int ==> Date;
                     difference : Date * Date ==> int;
 
         -- Relational operators >, >=, =, <=, < can also be used
@@ -212,7 +212,7 @@ pre isValidDate(month, day, year);
 -- day of the year.
 createFromDayOfYear: DayOfYear * Year -> Date
 createFromDayOfYear(dayYear, year) ==
-    add(create(1, 1, year), dayYear - 1)
+    addDay(create(1, 1, year), dayYear - 1)
 pre isDayOfYear(dayYear, year);
 
 -- ----------------------------------------------------------------------------
@@ -341,8 +341,8 @@ operations
 -- add adds a number of days equal to count to a date and returns the result.  Count can be negative, in which
 -- case, a number of days equal to count is subtracted from the date.  A positive count cannot be added to
 -- MaxDate.  A negative count cannot be subracted from MinDate.
-pure add: Date * int ==> Date
-add(date, count) ==
+pure addDay: Date * int ==> Date
+addDay(date, count) ==
     ( dcl result : Date := date,
           index : int := count;
     while index > 0 do (

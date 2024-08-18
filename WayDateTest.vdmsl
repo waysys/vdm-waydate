@@ -26,13 +26,17 @@ imports
             minDate: Date * Date -> Date;
             after: Date * Date -> bool;
             before: Date * Date -> bool;
+            equals: Date * Date -> bool;
             intToMonth: int -> Month;
             intToDay: int -> Day;
             intToYear: int -> Year;
 
         values
             MinDate;
-            MaxDate,
+            MaxDate;
+
+        operations
+            addDay: Date * int ==> Date,
 
     from AbsoluteDate
         types
@@ -148,6 +152,22 @@ testDayOfWeek() ==
     in 
         Week`dayOfWeek(date) = thursday;  
 
+-- Tests of additions
+
+testAddDay: () -> bool
+testAddDay() ==
+    let 
+        month = Date`intToMonth(2),
+        day = Date`intToDay(29),
+        year = Date`intToYear(2000),
+        baseDate1 = Date`create(month, day, year),
+        nextDay = Date`addDay(baseDate1, 1),
+        month1 = Date`intToMonth(3),
+        day1 = Date`intToDay(1)
+     in
+        Date`equals(nextDay, Date`create(month1, day1, year));
+        
+
 -- Summarizations of tests
 
 testAll: () -> bool
@@ -158,13 +178,15 @@ testAll() ==
         sumTestConvertToAbsoluteDate = testConvertToAbsoluteDate(),
         sumTestConvertFromAbsoluteDate = testConvertFromAbsoluteDate(),
         sumTestMaxAndMinDate = testMaxAndMinDate(),
-        sumTestDayOfWeek = testDayOfWeek() 
+        sumTestDayOfWeek = testDayOfWeek(),
+        sumTestAdd = testAddDay() 
     in 
         sumTestDayOfYear and 
         sumTestConvertToDate and
         sumTestConvertToAbsoluteDate and 
         sumTestConvertFromAbsoluteDate and 
         sumTestMaxAndMinDate and 
-        sumTestDayOfWeek;
+        sumTestDayOfWeek and
+        sumTestAdd;
         
 end DateTest

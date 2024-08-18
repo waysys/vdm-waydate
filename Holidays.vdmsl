@@ -35,7 +35,7 @@ imports
             before: Date * Date -> bool;
 
         operations  
-            add : Date * int ==> Date,
+            addDay : Date * int ==> Date,
 
     from Week
         types
@@ -243,7 +243,7 @@ christmas(year) ==
         adjustedEpact = if shiftedEpact = 0 or ( (shiftedEpact = 1) and (10 < (yr mod 19)))
             then shiftedEpact + 1
             else shiftedEpact,
-        paschalMoon = Date`add(Date`create(april, nineteen, year), -adjustedEpact),
+        paschalMoon = Date`addDay(Date`create(april, nineteen, year), -adjustedEpact),
         easterSunday = dayOfWeekAfter(paschalMoon, sunday) 
     in  
         mk_Holiday("Easter", easterSunday, easterSunday, sunday)
@@ -327,7 +327,7 @@ computeNthDayOfMonth(month, dayOfWeek, position, date) ==
     if position = 1 and Week`dayOfWeek(date) = dayOfWeek
         then date
     elseif position > 1 and Week`dayOfWeek(date) = dayOfWeek 
-        then computeNthDayOfMonth(month, dayOfWeek, position - 1, Date`add(date, 7))
+        then computeNthDayOfMonth(month, dayOfWeek, position - 1, Date`addDay(date, 7))
     else computeNthDayOfMonth(month, dayOfWeek, position, Date`increment(date))
 pre position >= 1 and position <= 4
 measure is not yet specified;
