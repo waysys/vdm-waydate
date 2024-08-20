@@ -14,6 +14,7 @@ imports
         types
             Date renamed Date;
             Year renamed Year;
+            Month renamed Month;
             Day  renamed Day;
 
         values
@@ -23,18 +24,23 @@ imports
         functions
             yearToInt: Year -> nat1 renamed yearToInt;
             intToYear: int -> Year renamed intToYear;
-            monthToNat: Month -> nat1 renamed monthToNat;
+            monthToInt: Month -> nat1 renamed monthToInt;
             intToMonth: int -> Month renamed intToMonth;
             intToDay: int -> Day renamed intToDay;
             dayToInt: Day -> int renamed dayToInt;
             getYear: Date -> Year renamed getYear;
-            getMonth: Date -> Year renamed getMonth;
-            daysInMonth: Month * Year -> nat1;
+            getMonth: Date -> Month renamed getMonth;
+            getDay: Date -> Day renamed getDay;
+            daysInMonth: Month * Year -> nat1 renamed daysInMonth;
             create: Month * Day * Year -> Date renamed create;
 
 exports
     values
         MaxCompletedMonths: int;
+
+    functions 
+        addMonths: Date * int -> Date;
+        completedMonths: Date -> int
 
 definitions
 
@@ -47,10 +53,10 @@ values
 -- ----------------------------------------------------------------------------
 
 -- MinYear is the nat1 value of MinYear in date
-MinYear = yearToInt(Date.MinYear);
+MinYear = yearToInt(Date`MinYear);
 
 -- MaxYear is the nat1 value of MaxYear in date
-MaxYear = yearToInt(Date.MaxYear);
+MaxYear = yearToInt(Date`MaxYear);
 
 -- MaxMonths is the maximum number of months that can be represented in a date.
 -- It is the number of months of MaxDate.
@@ -66,9 +72,9 @@ completedMonths: Date -> int
 completedMonths(date) == 
     let
         years = yearToInt(getYear(date)),
-        months = monthToNat(getMonth(date))
+        months = monthToInt(getMonth(date))
     in
-        (year - MinYear) + (month - 1);
+        (years - MinYear) + (months - 1);
 
 -- minDay returns the minimum of two days
 minDay: Day * Day -> Day

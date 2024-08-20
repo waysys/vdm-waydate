@@ -310,7 +310,7 @@ dayOfYearToInt(dayYear) ==
 intToYear: int -> Year
 intToYear(value) ==
     value
-pre value >= MinYear and value <= MaxYear;
+pre 1601 <= value and value <= 3999;
 
 yearToInt: Year -> nat1
 yearToInt(year) ==

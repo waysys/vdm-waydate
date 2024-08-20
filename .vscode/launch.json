@@ -12,12 +12,12 @@
             "defaultName": "DateTest"
         },
         {
-            "name": "Lens config: Debug DateTest`testBadAddMonth",
+            "name": "Lens config: Debug MonthsTest`testAddMonth",
             "type": "vdm",
             "request": "launch",
             "noDebug": false,
-            "defaultName": "DateTest",
-            "command": "p testBadAddMonth()"
+            "defaultName": "MonthsTest",
+            "command": "p testAddMonth()"
         }
     ]
 }
