@@ -22,8 +22,8 @@ imports from Date
         dayOfYear: Date -> DayOfYear;
         intToDayOfYear: int -> DayOfYear;
         intToYear: int -> Year;
-        dayOfYearToNat: DayOfYear -> nat1;
-        yearToNat: Year -> nat1
+        dayOfYearToInt: DayOfYear -> nat1;
+        yearToInt: Year -> nat1
 
 exports 
     types
@@ -80,7 +80,7 @@ convertToDate(absoluteDate) ==
 convertToAbsoluteDate: Date`Date -> AbsoluteDate
 convertToAbsoluteDate(date) ==
     let
-        dayYear = Date`dayOfYearToNat(Date`dayOfYear(date))
+        dayYear = Date`dayOfYearToInt(Date`dayOfYear(date))
     in
         dayYear + daysInPastYears(date.year);
 
@@ -127,7 +127,7 @@ yearFromAbsolute(absoluteDate) ==
 daysInPastYears: Year -> nat
 daysInPastYears(year) ==
     let
-        y : nat = Date`yearToNat(year) - 1601
+        y : nat = Date`yearToInt(year) - 1601
     in
         365 * y  -- days in prior years if all years had 365 days
              + y div 4    -- plus julian leap days in prior years if all years divided by 4 were leap years

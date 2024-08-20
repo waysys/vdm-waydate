@@ -30,10 +30,13 @@ imports
             intToMonth: int -> Month;
             intToDay: int -> Day;
             intToYear: int -> Year;
+            addMonth: Date * int -> Date;
 
         values
             MinDate;
             MaxDate;
+            MaxYear;
+            MinYear;
 
         operations
             addDay: Date * int ==> Date,
@@ -166,7 +169,29 @@ testAddDay() ==
         day1 = Date`intToDay(1)
      in
         Date`equals(nextDay, Date`create(month1, day1, year));
-        
+
+testAddMonth: () -> bool
+testAddMonth() ==
+    let 
+        month = Date`intToMonth(1),
+        day = Date`intToDay(31),
+        year = Date`intToYear(2000),
+        baseDate1 = Date`create(month, day, year), 
+        nextMonth = Date`addMonth(baseDate1, 1),
+        month1 = Date`intToMonth(2),
+        day1 = Date`intToDay(29)       
+    in
+        Date`equals(nextMonth, Date`create(month1, day1, year));        
+
+testBadAddMonth: () -> bool
+testBadAddMonth() ==
+    let
+        month = Date`intToMonth(12),
+        day = Date`intToDay(31),
+        baseDate1 = Date`create(month, day, Date`MaxYear), 
+        nextMonth = Date`addMonth(baseDate1, 1)
+    in 
+        Date`equals(nextMonth, Date`MaxDate);
 
 -- Summarizations of tests
 
@@ -179,7 +204,9 @@ testAll() ==
         sumTestConvertFromAbsoluteDate = testConvertFromAbsoluteDate(),
         sumTestMaxAndMinDate = testMaxAndMinDate(),
         sumTestDayOfWeek = testDayOfWeek(),
-        sumTestAdd = testAddDay() 
+        sumTestAdd = testAddDay(),
+        sumTestAddMonth = testAddMonth(),
+        sumTestBadAddMonth = testBadAddMonth() 
     in 
         sumTestDayOfYear and 
         sumTestConvertToDate and
@@ -187,6 +214,8 @@ testAll() ==
         sumTestConvertFromAbsoluteDate and 
         sumTestMaxAndMinDate and 
         sumTestDayOfWeek and
-        sumTestAdd;
+        sumTestAdd and
+        sumTestAddMonth and 
+        sumTestBadAddMonth;
         
 end DateTest

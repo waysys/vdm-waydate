@@ -37,8 +37,8 @@ exports types Month; Day; Year; DayOfYear; struct Date; Order;
                     -- Conversions
                     intToDayOfYear: int -> DayOfYear;
                     intToYear: int -> Year;
-                    dayOfYearToNat: DayOfYear -> nat1;
-                    yearToNat: Year -> nat1;
+                    dayOfYearToInt: DayOfYear -> nat1;
+                    yearToInt: Year -> nat1;
                     intToMonth: int -> Month;
                     monthToInt: Month -> int;
                     intToDay: int -> Day;
@@ -46,7 +46,7 @@ exports types Month; Day; Year; DayOfYear; struct Date; Order;
 
                     -- Calculations
                     increment: Date -> Date;
-                    decrement: Date -> Date
+                    decrement: Date -> Date;
 
         values      MaxYear : Year; MinYear: Year; MaxDate : Date; MinDate: Date;
 
@@ -303,8 +303,8 @@ intToDayOfYear(value) ==
     value
 pre value >= 1 and value <= 366;
 
-dayOfYearToNat: DayOfYear -> nat1
-dayOfYearToNat(dayYear) ==
+dayOfYearToInt: DayOfYear -> nat1
+dayOfYearToInt(dayYear) ==
     dayYear;
 
 intToYear: int -> Year
@@ -312,8 +312,8 @@ intToYear(value) ==
     value
 pre value >= MinYear and value <= MaxYear;
 
-yearToNat: Year -> nat1
-yearToNat(year) ==
+yearToInt: Year -> nat1
+yearToInt(year) ==
     year;
 
 intToMonth: int -> Month

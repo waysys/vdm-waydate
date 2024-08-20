@@ -1,0 +1,112 @@
+-- ----------------------------------------------------------------------------
+--
+-- Months - calculations involving months
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date:   19 Aug 2024
+--
+-- This module performs calculations related to months.
+-- ----------------------------------------------------------------------------
+
+module Months
+
+imports 
+    from Date 
+        types
+            Date renamed Date;
+            Year renamed Year;
+            Day  renamed Day;
+
+        values
+            MaxYear : Year;
+            MinYear : Year;
+
+        functions
+            yearToInt: Year -> nat1 renamed yearToInt;
+            intToYear: int -> Year renamed intToYear;
+            monthToNat: Month -> nat1 renamed monthToNat;
+            intToMonth: int -> Month renamed intToMonth;
+            intToDay: int -> Day renamed intToDay;
+            dayToInt: Day -> int renamed dayToInt;
+            getYear: Date -> Year renamed getYear;
+            getMonth: Date -> Year renamed getMonth;
+            daysInMonth: Month * Year -> nat1;
+            create: Month * Day * Year -> Date renamed create;
+
+exports
+    values
+        MaxCompletedMonths: int;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+types
+-- ----------------------------------------------------------------------------
+
+-- ----------------------------------------------------------------------------
+values
+-- ----------------------------------------------------------------------------
+
+-- MinYear is the nat1 value of MinYear in date
+MinYear = yearToInt(Date.MinYear);
+
+-- MaxYear is the nat1 value of MaxYear in date
+MaxYear = yearToInt(Date.MaxYear);
+
+-- MaxMonths is the maximum number of months that can be represented in a date.
+-- It is the number of months of MaxDate.
+MaxCompletedMonths = (MaxYear - MinYear) + 11
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- completedMonths returns the number of completed months inherent in the
+-- specified date.
+completedMonths: Date -> int 
+completedMonths(date) == 
+    let
+        years = yearToInt(getYear(date)),
+        months = monthToNat(getMonth(date))
+    in
+        (year - MinYear) + (month - 1);
+
+-- minDay returns the minimum of two days
+minDay: Day * Day -> Day
+minDay(day1, day2) ==
+    if dayToInt(day1) > dayToInt(day2) then day2
+    else day1;
+
+-- legalDay returns a valid day given a proposed day and the associated month and year.
+-- If the proposed day is larger than the last day of the month, the last day of the
+-- month is returned.  Otherwise, the proposed day is returned.
+legalDay: Month * Day * Year -> Day
+legalDay(month, proposedDay, year) ==
+    let
+        lastDayOfMonth = intToDay(daysInMonth(month, year))
+    in  
+        minDay(proposedDay, lastDayOfMonth);
+
+-- isValidAddMonth returns true if the combination of the date and month
+-- is greater or equal to zero and less than or equal MaxCompletedMonths.
+isValidAddMonth: Date * int -> bool
+isValidAddMonth(date, months) ==
+    let
+       targetMonths = completedMonths(date) + months
+    in
+        0 <= targetMonths and targetMonths <= MaxCompletedMonths;        
+
+-- addMonth computes a date that the specified months after the date, if the 
+-- specified number of months is positive.  If the specified number of months is negative,
+-- the computed date is the number of months before the date.
+addMonths: Date * int -> Date
+addMonths(date, months) == 
+    let
+        targetMonths = completedMonths(date) + months,
+        resultYear = intToYear(targetMonths div 12),
+        resultMonth = intToMonth(targetMonths mod 12),
+        resultDay = legalDay(resultMonth, getDay(date), resultYear)
+    in
+        create(resultMonth, resultDay, resultYear)
+    pre isValidAddMonth(date, months)
+
+end Months
