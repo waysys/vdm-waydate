@@ -26,6 +26,10 @@ exports types Month; Day; Year; DayOfYear; struct Date; Order;
                     dayOfYear: Date -> DayOfYear;
                     daysInMonth: Month * Year -> nat1;
 
+                    -- Validations Functions
+                    isMonth: Month -> bool;
+                    isYear: Year -> bool;
+
                     -- Comparisons
                     compare: Date * Date -> Order;
                     equals: Date * Date -> bool;

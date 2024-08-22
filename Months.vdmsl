@@ -28,25 +28,32 @@ imports
             intToMonth: int -> Month renamed intToMonth;
             intToDay: int -> Day renamed intToDay;
             dayToInt: Day -> int renamed dayToInt;
-            getYear: Date -> Year renamed getYear;
-            getMonth: Date -> Month renamed getMonth;
             getDay: Date -> Day renamed getDay;
             daysInMonth: Month * Year -> nat1 renamed daysInMonth;
-            create: Month * Day * Year -> Date renamed create;
+            create: Month * Day * Year -> Date;
+            isMonth: Month -> bool renamed isMonth;
+            isYear: Year -> bool renamed isYear;
 
 exports
+    types
+        MonthYear;
+
     values
         MaxCompletedMonths: int;
 
     functions 
         addMonths: Date * int -> Date;
-        completedMonths: Date -> int
+        completedMonths: MonthYear-> int
 
 definitions
 
 -- ----------------------------------------------------------------------------
 types
 -- ----------------------------------------------------------------------------
+
+MonthYear :: month : Month
+             year  : Year
+inv mk_MonthYear(month, year) == isMonth(month) and isYear(year);
 
 -- ----------------------------------------------------------------------------
 values
@@ -60,21 +67,81 @@ MaxYear = yearToInt(Date`MaxYear);
 
 -- MaxMonths is the maximum number of months that can be represented in a date.
 -- It is the number of months of MaxDate.
-MaxCompletedMonths = (MaxYear - MinYear) + 11
+MaxCompletedMonths = 12 * (MaxYear - MinYear) + 11
 
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
 
--- completedMonths returns the number of completed months inherent in the
--- specified date.
-completedMonths: Date -> int 
-completedMonths(date) == 
+-- ----------------------------------------------------------------------------
+-- validation functions
+-- ----------------------------------------------------------------------------
+
+-- isMonthYear returns true if the MonthYear is valid.
+isMonthYear: MonthYear -> bool
+isMonthYear(monthYear) ==
+    isMonth(monthYear.month) and isYear(monthYear.year);
+
+-- isValidAddMonth returns true if the combination of the date and month
+-- is greater or equal to zero and less than or equal MaxCompletedMonths.
+isValidAddMonth: Date * int -> bool
+isValidAddMonth(date, months) ==
     let
-        years = yearToInt(getYear(date)),
-        months = monthToInt(getMonth(date))
+        monthYear = createFromDate(date),
+        targetMonths = completedMonths(monthYear) + months
     in
-        (years - MinYear) + (months - 1);
+        0 <= targetMonths and targetMonths <= MaxCompletedMonths;      
+
+-- ----------------------------------------------------------------------------
+-- constructors
+-- ----------------------------------------------------------------------------
+
+-- create creates a MonthYear from the specified month and year;
+create: Month * Year -> MonthYear
+create(month, year) ==
+    mk_MonthYear(month, year)
+pre isMonth(month) and isYear(year)
+post isMonthYear(RESULT);
+
+-- createFromMonths converts completed months to the equivalent month and year. 
+createFromMonths: int -> MonthYear
+createFromMonths(months) ==
+    let
+        year = intToYear(months div 12 + MinYear),
+        month = intToMonth(months mod 12 + 1)
+    in
+        create(month, year)
+pre 0 <= months and months <= MaxCompletedMonths
+post isMonthYear(RESULT) and completedMonths(RESULT) = months;
+
+-- createFromDate creates a MonthYear based on the month and year of a date. 
+createFromDate: Date -> MonthYear
+createFromDate(date) ==
+    create(date.month, date.year)
+post isMonthYear(RESULT) and RESULT.month = date.month and RESULT.year = date.year;
+
+-- ----------------------------------------------------------------------------
+-- calculations
+-- ----------------------------------------------------------------------------
+
+-- completedMonths returns the number of completed months inherent in the
+-- specified MonthYear.
+completedMonths: MonthYear -> int 
+completedMonths(monthYear) == 
+    let
+        month = monthToInt(monthYear.month),
+        year = yearToInt(monthYear.year)
+    in
+        12 * (year - MinYear) + (month - 1);
+
+-- daysInMonthYear returns the number of days in a MonthYear. 
+daysInMonthYear: MonthYear -> int 
+daysInMonthYear(monthYear) ==
+    daysInMonth(monthYear.month, monthYear.year);
+
+-- ----------------------------------------------------------------------------
+-- day calculations
+-- ----------------------------------------------------------------------------
 
 -- minDay returns the minimum of two days
 minDay: Day * Day -> Day
@@ -85,21 +152,12 @@ minDay(day1, day2) ==
 -- legalDay returns a valid day given a proposed day and the associated month and year.
 -- If the proposed day is larger than the last day of the month, the last day of the
 -- month is returned.  Otherwise, the proposed day is returned.
-legalDay: Month * Day * Year -> Day
-legalDay(month, proposedDay, year) ==
+legalDay: MonthYear * Day -> Day
+legalDay(monthYear, proposedDay) ==
     let
-        lastDayOfMonth = intToDay(daysInMonth(month, year))
+        lastDayOfMonth = intToDay(daysInMonthYear(monthYear))
     in  
         minDay(proposedDay, lastDayOfMonth);
-
--- isValidAddMonth returns true if the combination of the date and month
--- is greater or equal to zero and less than or equal MaxCompletedMonths.
-isValidAddMonth: Date * int -> bool
-isValidAddMonth(date, months) ==
-    let
-       targetMonths = completedMonths(date) + months
-    in
-        0 <= targetMonths and targetMonths <= MaxCompletedMonths;        
 
 -- addMonth computes a date that the specified months after the date, if the 
 -- specified number of months is positive.  If the specified number of months is negative,
@@ -107,12 +165,13 @@ isValidAddMonth(date, months) ==
 addMonths: Date * int -> Date
 addMonths(date, months) == 
     let
-        targetMonths = completedMonths(date) + months,
-        resultYear = intToYear(targetMonths div 12),
-        resultMonth = intToMonth(targetMonths mod 12),
-        resultDay = legalDay(resultMonth, getDay(date), resultYear)
+        inputMonthYear = createFromDate(date),
+        targetMonths = completedMonths(inputMonthYear) + months,
+        outputMonthYear = createFromMonths(targetMonths),
+        proposedDay = getDay(date),
+        day = legalDay(outputMonthYear, proposedDay)
     in
-        create(resultMonth, resultDay, resultYear)
+        Date`create(outputMonthYear.month, day, outputMonthYear.year)
     pre isValidAddMonth(date, months)
 
 end Months

@@ -1,7 +1,8 @@
 # DataRange - overlap
 
 ## Function
-```
+
+```vdm-sl
 overlaps: DateRange * DateRange -> bool
 overlaps(range1, range2) ==
    if WayDate`before(range1.last, range2.first) then false
@@ -20,10 +21,11 @@ overlap(range1, range2) = exists date & inRange(range1, date) and inRange(range2
 If they do not overlap,
 then there is no date that is in both ranges.
 
-not overlap(range1, range2) = forall date & not inRange(range1, date) or not inRange(range2, date) 
+not overlap(range1, range2) = forall date & not inRange(range1, date) or not inRange(range2, date)
 
 ## Proof 1 by cases
-```
+
+```text
 |     | overlap(range1, range2) = true
 |  =  |   <definition of overlap>          
 |     | range1.first <= range2.last and range2.first <= range1.last
@@ -63,4 +65,3 @@ Case    assume range2.first < range1.first and date = range1.first
 |  =  |   <both case 1 and case 2 false>
 |     | not overlap(range1, range2) and not exits date & inRange(range1, date) and inRange(range2, date)
 ```
-           

@@ -1,4 +1,4 @@
 
 # vdm-waydate
 
-WayDate specification in VDM
+WayDate specification in VDM.
