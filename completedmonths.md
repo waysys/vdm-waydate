@@ -1,8 +1,8 @@
 # CompletedMonths - computations involving months and years
 
-## Definiton: Completed Months
+## Definiton: Completed Months 
 
-Given a number of months and a year on or after January, 1601, the completed months are the number of months from January, 1601, until the month prior to the month and year.
+Given a number of months and a year on or after January, 1601, the completed months are the number of months from January, 1601, until (but not including) the specified month and year.
 
 ```vdm-sl
 firstMonthYear = create(1, 1601)
@@ -30,43 +30,30 @@ completedMonths(monthYear) ==
 ## Proof Obligations
 
 ### Proof Oblication 1
-
-#### Given
-
+#### Given:
 ```vdm-sl
 firstMonthYear = create(1, 1601)
 ```
-
-#### Prove
-
+#### Prove:
 ```vdm-sl
 completedMonths(firstMonthYear) = 0
 ```
 
 ### Proof Obligation 2
-
-#### Given
-
+#### Given:
 ```vdm-sl
 1 <= month < 12 
 ```
-
-#### Prove
-
+#### Prove:
 ```vdm-sl
 completedMonths(month + 1, year) = completedMonth(month, year) + 1
 ```
-
 ### Proof Obligation 3
-
-#### Given
-
+#### Given:
 ```vdm-sl
 month = 12
 ```
-
-#### Prove
-
+#### Prove:
 ```vdm-sl
 completedMonths(month + 1, year) = completedMonth(1, year + 1)
 ```
@@ -102,3 +89,6 @@ completedMonths(month + 1, year) = completedMonth(1, year + 1)
 |     | 12 * (year + 1 - MinYear) + (1 - 1) |
 | =   |   <substitution> |
 |     | completedMonths(1, year + 1)
+
+
+
