@@ -148,9 +148,9 @@ testDayOfWeek: () -> bool
 testDayOfWeek() ==
     let
         date   = Date`create(November, 21, 2023),
-        thursday = Week`weekDay(4)
+        tuesday = Week`weekDay(2)
     in 
-        Week`dayOfWeek(date) = thursday;  
+        Week`dayOfWeek(date) = tuesday;  
 
 -- Tests of additions
 
