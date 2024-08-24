@@ -12,11 +12,11 @@
             "defaultName": "DateTest"
         },
         {
-            "name": "Lens config: Debug DateTest`testAll",
+            "name": "Lens config: Debug HolidaysTest`testAll",
             "type": "vdm",
             "request": "launch",
             "noDebug": false,
-            "defaultName": "DateTest",
+            "defaultName": "HolidaysTest",
             "command": "p testAll()"
         }
     ]
