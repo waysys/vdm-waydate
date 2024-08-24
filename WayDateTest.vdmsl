@@ -10,26 +10,35 @@
 module DateTest
 
 imports 
+    from DateTypes
+        values 
+            -- Months
+            January : nat1 renamed January;
+            February : nat1 renamed February;
+            March : nat1 renamed March;
+            April : nat1 renamed April;
+            May : nat1 renamed May;
+            June : nat1 renamed June;
+            July : nat1 renamed July;
+            -- August : nat1 renamed August;
+            September : nat1 renamed September;
+            October : nat1 renamed October;
+            November : nat1 renamed November;
+            December : nat1 renamed December,
+
     from Date 
         types
-            Month renamed Month;
-            Day   renamed Day;
-            Year  renamed Year;
             Date  renamed Date;
-            DayOfYear renamed DayOfYear;
 
         functions
-            createFromDayOfYear: DayOfYear * Year -> Date;
-            create: Month * Day * Year -> Date;
-            dayOfYear: Date -> DayOfYear;
+            createFromDayOfYear: nat1 * nat1 -> Date;
+            create: nat1 * nat1 * nat1 -> Date;
+            dayOfYear: Date -> nat1;
             maxDate: Date * Date -> Date;
             minDate: Date * Date -> Date;
             after: Date * Date -> bool;
             before: Date * Date -> bool;
             equals: Date * Date -> bool;
-            intToMonth: int -> Month;
-            intToDay: int -> Day;
-            intToYear: int -> Year;
 
         values
             MinDate;
@@ -83,13 +92,10 @@ functions
 testDayOfYear: () -> bool
 testDayOfYear() ==
     let
-        month = Date`intToMonth(10),
-        day = Date`intToDay(31),
-        year = Date`intToYear(2022),
-        startDate = Date`create(month, day, year),
+        startDate = Date`create(October, 31, 2022),
         dayOfYear = Date`dayOfYear(startDate)
     in
-        startDate = Date`createFromDayOfYear(dayOfYear, year);
+        startDate = Date`createFromDayOfYear(dayOfYear, 2022);
 
 -- Tests of absolute date conversion
 
@@ -98,10 +104,7 @@ testConvertToDate: () -> bool
 testConvertToDate() ==
     let
         absoluteDate : AbsoluteDate = AbsoluteDate`natToAbsoluteDate(20),
-        month  = Date`intToMonth(1),
-        day    = Date`intToDay(20),
-        year   = Date`intToYear(1601),
-        expectedDate = Date`create(month, day, year)
+        expectedDate = Date`create(January, 20, 1601)
     in
         AbsoluteDate`convertToDate(absoluteDate) = expectedDate;
 
@@ -144,10 +147,7 @@ testMaxAndMinDate() ==
 testDayOfWeek: () -> bool
 testDayOfWeek() ==
     let
-        month  = Date`intToMonth(11),
-        day    = Date`intToDay(23),
-        year   = Date`intToYear(2023),
-        date   = Date`create(month, day, year),
+        date   = Date`create(November, 21, 2023),
         thursday = Week`weekDay(4)
     in 
         Week`dayOfWeek(date) = thursday;  
@@ -157,15 +157,10 @@ testDayOfWeek() ==
 testAddDay: () -> bool
 testAddDay() ==
     let 
-        month = Date`intToMonth(2),
-        day = Date`intToDay(29),
-        year = Date`intToYear(2000),
-        baseDate1 = Date`create(month, day, year),
-        nextDay = Date`addDay(baseDate1, 1),
-        month1 = Date`intToMonth(3),
-        day1 = Date`intToDay(1)
+        baseDate1 = Date`create(February, 29, 2000),
+        nextDay = Date`addDay(baseDate1, 1)
      in
-        Date`equals(nextDay, Date`create(month1, day1, year));
+        Date`equals(nextDay, Date`create(March, 1, 2000));
 
 -- Summarizations of tests
 

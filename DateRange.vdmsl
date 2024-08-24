@@ -17,6 +17,7 @@ imports
             functions
                 before: Date * Date -> bool;
                 after:  Date * Date -> bool;
+                increment: Date -> Date renamed increment;
 
             operations
                 difference : Date * Date ==> int;
@@ -29,7 +30,10 @@ exports
         create: Date * Date -> DateRange;
         inRange: DateRange * Date -> bool; 
         overlaps: DateRange * DateRange -> bool;   
-        size: DateRange -> nat1
+        size: DateRange -> nat1;
+
+    operations
+        toSet: DateRange ==> set of Date
 
 definitions
 
@@ -75,5 +79,21 @@ size: DateRange -> nat1
 size(range) ==
     Date`difference(range.last, range.first) + 1;
 
+-- ----------------------------------------------------------------------------
+operations 
+-- ----------------------------------------------------------------------------
+
+-- toSet converts the date range to a set of dates.
+pure toSet: DateRange ==> set of Date 
+toSet(dateRange) == 
+    ( dcl date : Date := dateRange.first,
+          aSet : set of Date := {};
+      while inRange(dateRange, date) do (
+        aSet := aSet union {date};
+        date := increment(date);
+      );
+      return aSet;
+    )
+    
 
 end DateRange

@@ -4,90 +4,78 @@
 -- Author: William Shaffer (wshaffer@waysysweb.com)
 -- Date: 17 Nov 2023
 --
--- This module provides a specification for date creation and manipulation.
+-- This module provides a specification for date creation and manipulation. 
 -- The definitions can be used in proofs of date codes.
 -- ----------------------------------------------------------------------------
+
 module Date
 
-exports types Month; Day; Year; DayOfYear; struct Date; Order; 
+imports
+    from DateTypes
+        values
+            MaxYear : nat1 renamed MaxYear;
+            MinYear : nat1 renamed MinYear;
+            January : nat1 renamed January;
+            December : nat1 renamed December;
+            FirstDay : nat1 renamed FirstDay;
+            LastDay : nat1 renamed LastDay;
 
-        functions   -- Constructors
-                    create: Month * Day * Year -> Date;
-                    createFromDayOfYear: DayOfYear * Year -> Date;
+        functions
+            -- validations
+            isDay : nat1 * nat1 * nat1 -> bool renamed isDay;
+            isYear : nat1 -> bool renamed isYear;
 
-                    -- Properties
-                    getDay: Date -> Day;
-                    getMonth: Date -> Month;
-                    getYear: Date -> Year;
+            -- data providers
+            daysInYear: nat1 -> nat1 renamed daysInYear;
+            daysInMonth: nat1 * nat1 -> nat1 renamed daysInMonth;
+             
+exports types struct Date; Order; 
+        functions   
+            -- Constructors
+            create: nat1 * nat1 * nat1 -> Date;
+            createFromDayOfYear: nat1 * nat1 -> Date;
 
-                    -- Information Functions
-                    isLeapYear:  Year -> bool;
-                    daysInYear: Year -> nat1;
-                    dayOfYear: Date -> DayOfYear;
-                    daysInMonth: Month * Year -> nat1;
+            -- Properties
+            getDay: Date -> nat1;
+            getMonth: Date -> nat1;
+            getYear: Date -> nat1;
 
-                    -- Validations Functions
-                    isMonth: Month -> bool;
-                    isYear: Year -> bool;
+            -- Information Functions
+            dayOfYear: Date -> nat1;
 
-                    -- Comparisons
-                    compare: Date * Date -> Order;
-                    equals: Date * Date -> bool;
-                    after: Date * Date -> bool;
-                    before: Date * Date -> bool;
-                    maxDate: Date * Date -> Date;
-                    minDate: Date * Date -> Date;
+            -- Comparisons
+            compare: Date * Date -> Order;
+            equals: Date * Date -> bool;
+            after: Date * Date -> bool;
+            before: Date * Date -> bool;
+            maxDate: Date * Date -> Date;
+            minDate: Date * Date -> Date;
 
-                    -- Conversions
-                    intToDayOfYear: int -> DayOfYear;
-                    intToYear: int -> Year;
-                    dayOfYearToInt: DayOfYear -> nat1;
-                    yearToInt: Year -> nat1;
-                    intToMonth: int -> Month;
-                    monthToInt: Month -> int;
-                    intToDay: int -> Day;
-                    dayToInt: Day -> int;
+            -- Calculations
+            increment: Date -> Date;
+            decrement: Date -> Date;
 
-                    -- Calculations
-                    increment: Date -> Date;
-                    decrement: Date -> Date;
-
-        values      MaxYear : Year; MinYear: Year; MaxDate : Date; MinDate: Date;
+        values      MaxDate : Date; MinDate: Date;
 
         operations  addDay : Date * int ==> Date;
                     difference : Date * Date ==> int;
 
         -- Relational operators >, >=, =, <=, < can also be used
 
-
 definitions
 
 -- ----------------------------------------------------------------------------
 types
--- ----------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------- 
 
-Month = nat1
-inv month == month >= 1 and month <= 12;
-
-Day = nat1
-inv day == day >= 1 and day <= 31;
-
-Year = nat1
-inv year == year >= 1601 and year <= 3999;
-
-DayOfYear = nat1
-inv dayYear == dayYear >= 1 and dayYear <= 366;
-
-Date :: month : Month
-        day   : Day
-        year  : Year
+Date :: month : nat1
+        day   : nat1
+        year  : nat1
 inv mk_Date(month, day, year) == isValidDate(month, day, year)
 ord mk_Date(month1, day1, year1) < mk_Date(month2, day2, year2) ==
-    year1 < year2 or
-    year1 = year2 and month1 < month2 or
-    year1 = year2 and month1 = month2 and day1 < day2;
-
-DaysPerMonth = map  Month to nat;
+    year1 < year2 or 
+    (year1 = year2 and month1 < month2) or 
+    (year1 = year2 and month1 = month2 and day1 < day2);
 
 Order = <Before> | <Equal> | <After>;
 
@@ -95,35 +83,11 @@ Order = <Before> | <Equal> | <After>;
 values
 -- ----------------------------------------------------------------------------
 
--- MaxYear is the largest year handled by WayDate.
-MaxYear : Year = 3999;
-
--- MinYear is the minimum year handled by WayDate. Since the Gregorian
--- calendar did not begin until 1582, there seems little point in using this
--- class for dates prior to 1582. 1601 is a convenient year for the epoch.
-MinYear : Year = 1601;
-
--- daysPerMonth is the number of days in each month in a non-leap year.
-daysPerMonth : DaysPerMonth = {
-    1  |-> 31, 
-    2  |-> 28,
-    3  |-> 31,
-    4  |-> 30,
-    5  |-> 31,
-    6  |-> 30,
-    7  |-> 31,
-    8  |-> 31,
-    9  |-> 30,
-    10 |-> 31,
-    11 |-> 30,
-    12 |-> 31
-};
-
 -- MaxDate is the largest date handled by WayDate.
-MaxDate = create(12, 31, MaxYear);
+MaxDate = create(December, LastDay, MaxYear);
 
 -- MinDate is the smallest date handled by WayDate.
-MinDate = create(1, 1, MinYear);
+MinDate = create(January, FirstDay, MinYear);
 
 -- ----------------------------------------------------------------------------
 functions
@@ -133,36 +97,16 @@ functions
 -- Validation Functions --
 -- ----------------------------------------------------------------------------
 
--- isMonth returns true if the month is a valid month.month. 
-isMonth: Month -> bool
-isMonth(month) ==
-    if month < 1 or month > 12 then false
-    else true;
-
--- isYear returns true if the year is a valid year
-isYear: Year -> bool
-isYear(year) == 
-    if year < MinYear or year > MaxYear then false 
-    else true;
-
--- isDay returns true if day is a valid day given the specified month and year.
-isDay: Month * Day * Year -> bool
-isDay(month, day, year) ==
-    if day > daysInMonth(month, year) then false
-    else if day < 1 then false
-    else true
-pre isMonth(month) and isYear(year);
-
 -- isValidDate returns true if the specified month, day, and year 
 -- form a valid date.
-isValidDate: Month * Day * Year -> bool
+isValidDate: nat1 * nat1 * nat1 -> bool
 isValidDate(month, day, year) == 
     if isDay(month, day, year) then true 
     else false;
 
 -- isDayOfYear returns true if dayOfYear is a valid day of year given the specified
 -- year.
-isDayOfYear: DayOfYear * Year -> bool
+isDayOfYear: nat1 * nat1 -> bool
 isDayOfYear(dayYear, year) ==
     if dayYear < 1 then false
     else if dayYear > daysInYear(year) then false
@@ -173,31 +117,11 @@ pre isYear(year);
 -- Data providers 
 -- ----------------------------------------------------------------------------
 
--- isLeapYear returns true if the year is a leap year.
-isLeapYear: Year -> bool
-isLeapYear(year) ==
-    if year mod 400 = 0 then true
-    elseif year mod 100 = 0 then false 
-    elseif year mod 4 = 0 then true 
-    else false;
-
--- daysInMonth return the number of days in the specified month and year.
-daysInMonth: Month * Year -> nat1
-daysInMonth(month, year) ==
-    if isLeapYear(year) and (month = 2) then daysPerMonth(2) + 1
-    else daysPerMonth(month);
-
--- daysInYear returns the number of days in the specified year.
-daysInYear: Year -> nat1
-daysInYear(year) ==
-    if isLeapYear(year) then 366
-    else 365;
-
 -- dayOfYear comoputes the day of the year for the specified date.  1-Jan-YYYY is day 1.
-dayOfYear: Date -> DayOfYear
+dayOfYear: Date -> nat1
 dayOfYear(date) ==
     let
-        firstOfYear = create(1, 1, date.year)
+        firstOfYear = create(January, FirstDay, date.year)
     in
         difference(date, firstOfYear) + 1;
 
@@ -207,31 +131,31 @@ dayOfYear(date) ==
 
 -- create constructs a date given the specified month, day, and year.  The day
 -- must be a valid day given the month and year.
-create: Month * Day * Year -> Date
+create: nat1 * nat1 * nat1 -> Date
 create(month, day, year) ==
     mk_Date(month, day, year)
 pre isValidDate(month, day, year);
 
 -- createFromDayOfYear constructs a date with a day of year equal to the specified
 -- day of the year.
-createFromDayOfYear: DayOfYear * Year -> Date
+createFromDayOfYear: nat1 * nat1 -> Date
 createFromDayOfYear(dayYear, year) ==
-    addDay(create(1, 1, year), dayYear - 1)
+    addDay(create(January, FirstDay, year), dayYear - 1)
 pre isDayOfYear(dayYear, year);
 
 -- ----------------------------------------------------------------------------
 -- Properties
 -- ----------------------------------------------------------------------------
 
-getMonth: Date -> Month
+getMonth: Date -> nat1
 getMonth(date) == 
     date.month;
 
-getDay: Date -> Day
+getDay: Date -> nat1
 getDay(date) ==
     date.day;
 
-getYear: Date -> Year
+getYear: Date -> nat1
 getYear(date) ==
     date.year;
 
@@ -243,9 +167,12 @@ getYear(date) ==
 -- be incremented.
 increment: Date -> Date
 increment(date) == 
-    if date.month = 12 and date.day = 31 then create(1, 1, date.year + 1)
-    elseif date.day = daysInMonth(date.month, date.year) then create(date.month + 1, 1, date.year)
-    else create(date.month, date.day + 1, date.year)
+    let 
+        lastDayOfMonth = daysInMonth(date.month, date.year)
+    in
+        if date.month = December and date.day = LastDay then create(January, FirstDay, date.year + 1)
+        elseif date.day = lastDayOfMonth then create(date.month + 1, FirstDay, date.year)
+        else create(date.month, date.day + 1, date.year)
 pre date <> MaxDate;
 
 -- decrement subtracts a day to a date and returns a new date with the result.  The MinDate
@@ -299,50 +226,10 @@ minDate(date1, date2) ==
     else date2;
 
 -- ----------------------------------------------------------------------------
--- Conversions
--- ----------------------------------------------------------------------------
-
-intToDayOfYear: int -> DayOfYear
-intToDayOfYear(value) ==
-    value
-pre value >= 1 and value <= 366;
-
-dayOfYearToInt: DayOfYear -> nat1
-dayOfYearToInt(dayYear) ==
-    dayYear;
-
-intToYear: int -> Year
-intToYear(value) ==
-    value
-pre 1601 <= value and value <= 3999;
-
-yearToInt: Year -> nat1
-yearToInt(year) ==
-    year;
-
-intToMonth: int -> Month
-intToMonth(value) ==
-    value
-pre value >= 1 and value <= 12;
-
-monthToInt: Month -> int
-monthToInt(month) ==
-    month;
-
-intToDay: int -> Day
-intToDay(value) ==
-    value
-pre value >= 1 and value <= 31;
-
-dayToInt: Day -> int
-dayToInt(day) ==
-    day
-
--- ----------------------------------------------------------------------------
 operations
 -- ----------------------------------------------------------------------------
 
--- add adds a number of days equal to count to a date and returns the result.  Count can be negative, in which
+-- addDay adds a number of days equal to count to a date and returns the result.  Count can be negative, in which
 -- case, a number of days equal to count is subtracted from the date.  A positive count cannot be added to
 -- MaxDate.  A negative count cannot be subracted from MinDate.
 pure addDay: Date * int ==> Date
@@ -377,6 +264,5 @@ difference(date1, date2) ==
     );
     return diff
    )
-
 
 end Date

@@ -17,25 +17,48 @@
 module Holidays
 
 imports
+    from DateTypes
+        values 
+            -- Months
+            January : nat1 renamed January;
+            February : nat1 renamed February;
+            -- March : nat1 renamed March;
+            April : nat1 renamed April;
+            May : nat1 renamed May;
+            June : nat1 renamed June;
+            July : nat1 renamed July;
+            -- August : nat1 renamed August;
+            September : nat1 renamed September;
+            October : nat1 renamed October;
+            November : nat1 renamed November;
+            December : nat1 renamed December;
+
+        functions
+            daysInMonth: nat1 * nat1 -> nat1,
+
     from Date
         types 
-            Month renamed Month;
-            Day renamed Day;
-            Year renamed Year
             Date renamed Date;
 
         functions
-            create: Month * Day * Year -> Date;
-            intToMonth: int -> Month;
-            intToDay: int -> Day;
-            yearToInt: Year -> nat1;
+            create: nat1 * nat1 * nat1 -> Date;
             increment: Date -> Date;
             decrement: Date -> Date;
-            daysInMonth: Month * Year -> nat1;
             before: Date * Date -> bool;
+            after: Date * Date -> bool renamed after;
 
         operations  
             addDay : Date * int ==> Date,
+
+    from DateRange
+        types
+            DateRange renamed DateRange;
+
+        functions
+            create: Date * Date -> DateRange;
+
+        operations
+            toSet: DateRange ==> set of Date renamed toSet,           
 
     from Week
         types
@@ -47,24 +70,24 @@ imports
         functions
             dayOfWeek: Date -> DayOfWeek; 
 
-    exports
+exports
         types
             struct Holiday;
 
         functions
             -- holiday functions
-            newYearsDay: Year -> Holiday;
-            martinLutherKingBirthday: Year -> Holiday;
-            washingtonsBirthday: Year -> Holiday;
-             easter: Year -> Holiday;
-            memorialDay: Year -> Holiday;
-            juneteenth: Year -> Holiday;
-            independenceDay: Year -> Holiday;
-            laborDay: Year -> Holiday;
-            columbusDay: Year -> Holiday;
-            veteransDay: Year -> Holiday;
-            thanksgiving: Year -> Holiday;
-            christmas: Year -> Holiday;
+            newYearsDay: nat1 -> Holiday;
+            martinLutherKingBirthday: nat1 -> Holiday;
+            washingtonsBirthday: nat1 -> Holiday;
+             easter: nat1 -> Holiday;
+            memorialDay: nat1 -> Holiday;
+            juneteenth: nat1 -> Holiday;
+            independenceDay: nat1 -> Holiday;
+            laborDay: nat1 -> Holiday;
+            columbusDay: nat1 -> Holiday;
+            veteransDay: nat1 -> Holiday;
+            thanksgiving: nat1 -> Holiday;
+            christmas: nat1 -> Holiday;
             
             -- properties
             getName: Holiday -> seq of char;
@@ -74,8 +97,8 @@ imports
 
             -- support functions
             observedDate: Date -> Date;
-            nthDayOfMonth: Month * DayOfWeek * nat1 * Year -> Date;
-            lastWeekDayOfMonth: Month * Year * DayOfWeek -> Date;
+            nthDayOfMonth: nat1 * DayOfWeek * nat1 * nat1 -> Date;
+            lastWeekDayOfMonth: nat1 * nat1 * DayOfWeek -> Date;
             dayOfWeekAfter: Date * DayOfWeek -> Date;
 
 definitions
@@ -101,153 +124,142 @@ monday : DayOfWeek = Week`daysOfWeek(2);
 thursday : DayOfWeek = Week`daysOfWeek(5);
 saturday : DayOfWeek = Week`daysOfWeek(7);
 
-january = Date`intToMonth(1);
-february = Date`intToMonth(2);
-may = Date`intToMonth(5);
-june = Date`intToMonth(6);
-july = Date`intToMonth(7);
-september = Date`intToMonth(9);
-october = Date`intToMonth(10);
-november = Date`intToMonth(11);
-december = Date`intToMonth(12)
-
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
 
 -- Holidays -------------------------------------------------------------------
 
--- New Year’s Day: fixed holiday.  If it falls on a weekend, the observed day
+-- New Year's Day: fixed holiday.  If it falls on a weekend, the observed day
 -- is on Friday or Monday.
-newYearsDay: Year -> Holiday
+newYearsDay: nat1 -> Holiday
 newYearsDay(year) ==
     let
         name = "New Year's Day",
-        day : Day = Date`intToDay(1)
+        day = 1
     in
-        createFixedHoliday(name, january, day, year)
-pre Date`yearToInt(year) >= 1900;
+        createFixedHoliday(name, January, day, year)
+pre year >= 1900;
 
 -- Birthday of Martin Luther King, Jr.: floating holiday -- third Monday in
 -- January. 
-martinLutherKingBirthday: Year -> Holiday 
+martinLutherKingBirthday: nat1 -> Holiday 
 martinLutherKingBirthday(year) ==
     let
         name = "Birthday of Martin Luther King, Jr."
     in
-        createFloatingHoliday(name, january, monday, 3, year)
-pre Date`yearToInt(year) >= 1986;   
+        createFloatingHoliday(name, January, monday, 3, year)
+pre year >= 1900;   
 
 -- Washington's Birthday: floating holiday -- third Monday in
 -- February.
-washingtonsBirthday: Year -> Holiday
+washingtonsBirthday: nat1 -> Holiday
 washingtonsBirthday(year) ==
    let
         name = "Washington's Birthday"
     in
-         createFloatingHoliday(name, february, monday, 3, year)
-pre Date`yearToInt(year) >= 1968;
+         createFloatingHoliday(name, February, monday, 3, year)
+pre year >= 1900;
 
- -- Memorial Day: floating holiday -- last Monday in May.
- memorialDay: Year -> Holiday
+ -- Memorial nat1: floating holiday -- last Monday in May.
+ memorialDay: nat1 -> Holiday
  memorialDay(year) ==
     let 
         name = "Memorial Day",
-        actualDate = lastWeekDayOfMonth(may , year, monday),
+        actualDate = lastWeekDayOfMonth(May , year, monday),
         observeDate = actualDate,
         observedDayOfWeek = Week`dayOfWeek(observeDate)
     in
         mk_Holiday(name, actualDate, observeDate, observedDayOfWeek)
-pre Date`yearToInt(year) >= 1971;
+pre year >= 1900;
 
 -- Juneteenth National Independence Day: fixed holiday - June 19
-juneteenth: Year -> Holiday
+juneteenth: nat1 -> Holiday
 juneteenth(year) ==
    let 
         name = "Juneteenth National Independence Day",
-        day : Day = Date`intToDay(19)
+        day = 19
     in
-        createFixedHoliday(name, june, day, year)
-pre Date`yearToInt(year) >= 2021;
+        createFixedHoliday(name, June, day, year)
+pre year >= 1900;
 
 -- Independence Day: fixed holiday - July 4
-independenceDay: Year -> Holiday
+independenceDay: nat1 -> Holiday
 independenceDay(year) ==
     let 
         name = "Independence Day",
-        day : Day = Date`intToDay(4)
+        day = 4
     in 
-        createFixedHoliday(name, july, day, year)
-pre Date`yearToInt(year) >= 1870;
+        createFixedHoliday(name, July, day, year)
+pre year >= 1900;
 
 -- Labor Day: floating holiday - first Monday in September
-laborDay: Year -> Holiday
+laborDay: nat1 -> Holiday
 laborDay(year)  ==
     let 
         name = "Labor Day"
     in
-        createFloatingHoliday(name, september, monday, 1, year)
-pre Date`yearToInt(year) >= 1894;
+        createFloatingHoliday(name, September, monday, 1, year)
+pre year >= 1900;
 
 -- Columbus Day: floating holiday - second Monday in October
-columbusDay: Year -> Holiday 
+columbusDay: nat1 -> Holiday 
 columbusDay(year) == 
     let 
         name = "Columbus Day"
     in
-        createFloatingHoliday(name, october, monday, 2, year)
-pre Date`yearToInt(year) >= 1971;   
+        createFloatingHoliday(name, October, monday, 2, year)
+pre year >= 1900;   
 
 -- Veteran's Day: fixed holiday - November 11
-veteransDay: Year -> Holiday
+veteransDay: nat1 -> Holiday
 veteransDay(year) ==
     let 
         name = "Veteran's Day",
-        day : Day = Date`intToDay(11)
+        day = 11
     in 
-        createFixedHoliday(name, november, day, year)
-pre Date`yearToInt(year) >= 1954; 
+        createFixedHoliday(name, November, day, year)
+pre year >= 1900; 
 
 -- Thanksgiving Day: floating holiday - Fourth Thursday in November
-thanksgiving: Year -> Holiday
+thanksgiving: nat1 -> Holiday
 thanksgiving(year) ==
     let 
         name = "Thanksgiving Day"
     in 
-        createFloatingHoliday(name, november, thursday, 4, year)
-pre Date`yearToInt(year) >= 1942; 
+        createFloatingHoliday(name, November, thursday, 4, year)
+pre year >= 1900; 
 
 -- Christmas Day: fixed holiday - December 25
-christmas: Year -> Holiday
+christmas: nat1 -> Holiday
 christmas(year) == 
     let 
         name = "Christmas Day",
-        day : Day = Date`intToDay(25)
+        day = 25
     in 
-        createFixedHoliday(name, december, day, year)
- pre Date`yearToInt(year) >= 1900;     
+        createFixedHoliday(name, December, day, year)
+ pre year >= 1900;     
 
  -- Easter --------------------------------------------------------------------
 
  -- easter: Sunday after pashcal moon.  Algorithm based on Reingold and 
  -- Dershowitz, Calendrical Calculation: The Millennium Edition.
  -- Easter can never occur before March 22 or later than April 25
- easter: Year -> Holiday
+ easter: nat1 -> Holiday
  easter(year) ==
     let 
-        yr = Date`yearToInt(year),
-        april = Date`intToMonth(4),
-        nineteen = Date`intToDay(19),
+        yr = year,
+        nineteen = 19,
         century = (yr div 100) + 1,
         shiftedEpact = (14 + (11 * (yr mod 19)) - ((3 * century) div 4) + ((5 + 8 * century) div 25)) mod 30,
         adjustedEpact = if shiftedEpact = 0 or ( (shiftedEpact = 1) and (10 < (yr mod 19)))
             then shiftedEpact + 1
             else shiftedEpact,
-        paschalMoon = Date`addDay(Date`create(april, nineteen, year), -adjustedEpact),
+        paschalMoon = Date`addDay(Date`create(April, nineteen, year), -adjustedEpact),
         easterSunday = dayOfWeekAfter(paschalMoon, sunday) 
     in  
         mk_Holiday("Easter", easterSunday, easterSunday, sunday)
- pre Date`yearToInt(year) >= 1900;
+ pre year >= 1900;
 
 -- Properties -----------------------------------------------------------------
 
@@ -275,7 +287,7 @@ getObservedDayOfWeek(holiday) ==
 
 -- createFixedHoliday creates a Holiday structure for the specified fixed 
 -- US federal holiday.
-createFixedHoliday: seq of char * Month * Day * Year  -> Holiday
+createFixedHoliday: seq of char * nat1 * nat1 * nat1  -> Holiday
 createFixedHoliday(name, month, day, year) ==
     let 
         actualDate = Date`create(month, day, year),
@@ -283,11 +295,11 @@ createFixedHoliday(name, month, day, year) ==
         observedDayOfWeek = Week`dayOfWeek(observeDate)
     in 
         mk_Holiday(name, actualDate, observeDate, observedDayOfWeek)
-pre Date`yearToInt(year) >= 1900;
+pre year >= 1900;
 
 -- createFloatingHoliday creates a Holiday structure for a floating 
--- US federal holiday.  Cannot be used for Memorial Day.
-createFloatingHoliday: seq of char * Month * DayOfWeek * nat1 * Year  -> Holiday
+-- US federal holiday.  Cannot be used for Memorial nat1.
+createFloatingHoliday: seq of char * nat1 * DayOfWeek * nat1 * nat1  -> Holiday
 createFloatingHoliday(name, month, dayOfWeek, position, year) ==
    let 
         actualDate = nthDayOfMonth(month , dayOfWeek, position, year),
@@ -295,7 +307,7 @@ createFloatingHoliday(name, month, dayOfWeek, position, year) ==
         observedDayOfWeek = Week`dayOfWeek(observeDate)
     in
         mk_Holiday(name, actualDate, observeDate, observedDayOfWeek)
-pre Date`yearToInt(year) >= 1900;     
+pre year >= 1900;     
 
 -- observedDate implements the U.S federal rule: If a holiday falls on a Saturday, 
 -- for most Federal employees, the preceding Friday will be treated as a holiday 
@@ -312,17 +324,17 @@ observedDate(date) ==
 
 -- nthDayOfMonth calculates the positional date based on the month, day of the week,
 -- the position in the month (first, second, third, etc.), and year. 
-nthDayOfMonth: Month * DayOfWeek * nat1 * Year -> Date
+nthDayOfMonth: nat1 * DayOfWeek * nat1 * nat1 -> Date
 nthDayOfMonth(month, dayOfWeek, position, year) ==
     let
-        day = Date`intToDay(1),
+        day = 1,
         date = Date`create(month, day, year)
     in 
         computeNthDayOfMonth(month, dayOfWeek, position, date)
 pre position >= 1 and position <= 4;
 
--- computeNthDayOfMOnth performs the actual computation of the nthDayOfThe Month. 
-computeNthDayOfMonth: Month * DayOfWeek * nat1 * Date -> Date
+-- computeNthDayOfMOnth performs the actual computation of the nthDayOfThe nat1. 
+computeNthDayOfMonth: nat1 * DayOfWeek * nat1 * Date -> Date
 computeNthDayOfMonth(month, dayOfWeek, position, date) ==
     if position = 1 and Week`dayOfWeek(date) = dayOfWeek
         then date
@@ -333,16 +345,16 @@ pre position >= 1 and position <= 4
 measure is not yet specified;
 
 -- lastWeekDayOfMonth calculates the last day of the week in a month and year. 
-lastWeekDayOfMonth: Month * Year * DayOfWeek -> Date
+lastWeekDayOfMonth: nat1 * nat1 * DayOfWeek -> Date
 lastWeekDayOfMonth(month, year, dayOfWeek) ==
     let
-        daysInMonth = Date`intToDay(Date`daysInMonth(month, year)),
+        daysInMonth = DateTypes`daysInMonth(month, year),
         lastDateOfMonth = Date`create(month, daysInMonth, year)
     in
         computeLastWeekDayOfMonth(month, year, dayOfWeek, lastDateOfMonth);
 
 -- computeLastWeekDayOfMonth calculates the date of the last day of the week. 
-computeLastWeekDayOfMonth: Month * Year * DayOfWeek * Date -> Date
+computeLastWeekDayOfMonth: nat1 * nat1 * DayOfWeek * Date -> Date
 computeLastWeekDayOfMonth(month, year, dayOfWeek, date) == 
     if Week`dayOfWeek(date) = dayOfWeek then date
     else computeLastWeekDayOfMonth(month, year, dayOfWeek, Date`decrement(date))
@@ -364,10 +376,28 @@ dayOfWeekAfterBaseDate(date, dayOfWeek, baseDate) ==
     elseif Week`dayOfWeek(date) = dayOfWeek then date 
     else dayOfWeekAfterBaseDate(Date`increment(date), dayOfWeek, baseDate)
 pre not Date`before(date, baseDate)
+post dayOfWeekAfterPost(RESULT, dayOfWeek, baseDate)
 measure is not yet specified;
 -- Postcondition:
 --    result > baseDate and Date`dayOfWeek(result) = dayOfWeek and
 --    not exist date : Date & date <> result and date <> baseDate and 
 --       DateRange`inRange(DateRange`create(baseDate, result), date)
+
+-- dayOfWeekAfterPost returns true if the post condition to dayOfWeekAfterBaseDate is
+-- satisfied.
+dayOfWeekAfterPost: Date * DayOfWeek * Date -> bool 
+dayOfWeekAfterPost(result, dayOfWeek, baseDate) == 
+    let 
+        afterBaseDate = after(result, baseDate),
+        rightDayOfWeek = (Week`dayOfWeek(result) = dayOfWeek),
+        -- check that there is no other date between the baseDate and the result
+        -- with the same day of the week.
+        dateRange = DateRange`create(baseDate, result),
+        dateSet = toSet(dateRange),
+        anotherDate = exists date in set dateSet & Week`dayOfWeek(date) = dayOfWeek and 
+            date <> result and date <> baseDate
+    in 
+        afterBaseDate and rightDayOfWeek and (not anotherDate)
+
 
 end Holidays

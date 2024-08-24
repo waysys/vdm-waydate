@@ -11,19 +11,19 @@
 
 module AbsoluteDate
 
-imports from Date 
-    types
-        Year renamed Year;
-        Date renamed Date;
-        DayOfYear renamed DayOfYear;
+imports 
+    from DateTypes
+        values
+            MinYear renamed MinYear,
 
-    functions
-        createFromDayOfYear: DayOfYear * Year -> Date;
-        dayOfYear: Date -> DayOfYear;
-        intToDayOfYear: int -> DayOfYear;
-        intToYear: int -> Year;
-        dayOfYearToInt: DayOfYear -> nat1;
-        yearToInt: Year -> nat1
+    from Date 
+        types
+            Date renamed Date;
+
+        functions
+            createFromDayOfYear: nat1 * nat1 -> Date;
+            dayOfYear: Date -> nat1;
+            getYear: Date -> nat1 renamed getYear;
 
 exports 
     types
@@ -70,8 +70,8 @@ functions
 convertToDate: AbsoluteDate -> Date
 convertToDate(absoluteDate) ==
     let
-        year : Year = Date`intToYear(yearFromAbsolute(absoluteDate)),
-        dayYear : DayOfYear = Date`intToDayOfYear(absoluteDate - daysInPastYears(year))
+        year  = yearFromAbsolute(absoluteDate),
+        dayYear = absoluteDate - daysInPastYears(year)
     in 
         Date`createFromDayOfYear(dayYear, year);
 
@@ -80,9 +80,9 @@ convertToDate(absoluteDate) ==
 convertToAbsoluteDate: Date`Date -> AbsoluteDate
 convertToAbsoluteDate(date) ==
     let
-        dayYear = Date`dayOfYearToInt(Date`dayOfYear(date))
+        dayYear = Date`dayOfYear(date)
     in
-        dayYear + daysInPastYears(date.year);
+        dayYear + daysInPastYears(getYear(date));
 
 -- natToAbsoluteDate returns an absolute date confirming to the specified natural number.
 -- This function is needed in other modules that import this module.
@@ -124,10 +124,10 @@ yearFromAbsolute(absoluteDate) ==
 -- This alorithm is from:
 -- Edward M. Reingold and Nachum Dershowitz, Calendrical
 -- Calculations: The Millennium Edition (Cambridge, UK: Cambridge University Press, 2001) p. 51
-daysInPastYears: Year -> nat
+daysInPastYears: nat1 -> nat
 daysInPastYears(year) ==
     let
-        y : nat = Date`yearToInt(year) - 1601
+        y = year - MinYear
     in
         365 * y  -- days in prior years if all years had 365 days
              + y div 4    -- plus julian leap days in prior years if all years divided by 4 were leap years

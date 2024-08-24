@@ -12,9 +12,6 @@ module DateRangeTest
 imports
     from Date
         types 
-            Month renamed Month;
-            Day renamed Day;
-            Year renamed Year;
             Date renamed Date;
 
         values
@@ -22,10 +19,7 @@ imports
             MaxDate;
 
         functions
-            create: Month * Day * Year -> Date;
-            intToMonth: int -> Month;
-            intToDay: int -> Day;
-            intToYear: int -> Year,
+            create: nat1 * nat1 * nat1 -> Date,
 
     from DateRange
         types
@@ -61,26 +55,12 @@ values
 
 maxDateRange = DateRange`create(Date`MinDate, Date`MaxDate);
 
-month1 = Date`intToMonth(6);
-day1 = Date`intToDay(1);
-year1 = Date`intToYear(2020);
-date1 = Date`create(month1, day1, year1);
-
-month2 = Date`intToMonth(10);
-day2 = Date`intToDay(1);
-year2 = Date`intToYear(2021);
-date2 = Date`create(month2, day2, year2);
+date1 = Date`create(6, 1, 2020);
+date2 = Date`create(10, 1, 2021);
 range1 = DateRange`create(date1, date2);
 
-month3 = Date`intToMonth(10);
-day3 = Date`intToDay(2);
-year3 = Date`intToYear(2021);
-date3 = Date`create(month3, day3, year3);
-
-month4 = Date`intToMonth(10);
-day4 = Date`intToDay(9);
-year4 = Date`intToYear(2021);
-date4 = Date`create(month4, day4, year4);
+date3 = Date`create(10, 2, 2021);
+date4 = Date`create(10, 9, 2021);
 range2 = DateRange`create(date3, date4);
 
 -- ----------------------------------------------------------------------------
