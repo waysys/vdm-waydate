@@ -1,6 +1,6 @@
 -- ----------------------------------------------------------------------------
 --
--- Months - calculations involving months
+-- Months - calculations involving months-years
 -- Author: William Shaffer (wshaffer@waysysweb.com)
 -- Date:   19 Aug 2024
 --
@@ -29,12 +29,18 @@ exports
 
     values
         MaxCompletedMonths: int;
+        MaxMonthYear: MonthYear;
+        MinMonthYear: MonthYear;
 
     functions 
+        isMonthYear: MonthYear -> bool;
         completedMonths: MonthYear-> int;
         increment: MonthYear -> MonthYear;
+        decrement: MonthYear -> MonthYear;
+        create: nat1 * nat1 -> MonthYear;
         createFromMonths: int -> MonthYear;
         daysInMonthYear: MonthYear -> int;
+        equals: MonthYear * MonthYear -> bool;
 
     operations
         addMonth: MonthYear * int ==> MonthYear;
@@ -53,14 +59,14 @@ inv mk_MonthYear(month, year) == isMonth(month) and isYear(year);
 values
 -- ----------------------------------------------------------------------------
 
--- MaxMonths is the maximum number of months that can be represented in a date.
+-- MaxMonths is the maximum number of months that can be represented in a month-year.
 -- It is the number of months of MaxDate.
-MaxCompletedMonths = 12 * (MaxYear - MinYear) + 11;
+MaxCompletedMonths = 12 * (MaxYear - MinYear) + December - 1;
 
--- MaxMonthYear is the maximum month year
+-- MaxMonthYear is the maximum month-year.
 MaxMonthYear = create(December, MaxYear);
 
--- MinMonthYear is the minimum month year
+-- MinMonthYear is the minimum month-year.
 MinMonthYear = create(January, MinYear);
 
 -- ----------------------------------------------------------------------------
@@ -103,7 +109,7 @@ post isMonthYear(RESULT) and completedMonths(RESULT) = months;
 -- ----------------------------------------------------------------------------
 
 -- completedMonths returns the number of completed months inherent in the
--- specified MonthYear.
+-- specified month-year.
 completedMonths: MonthYear -> int 
 completedMonths(monthYear) == 
     let
@@ -112,7 +118,7 @@ completedMonths(monthYear) ==
     in
         12 * (year - MinYear) + (month - 1);
 
--- daysInMonthYear returns the number of days in a MonthYear. 
+-- daysInMonthYear returns the number of days in a month-year. 
 daysInMonthYear: MonthYear -> int 
 daysInMonthYear(monthYear) ==
     daysInMonth(monthYear.month, monthYear.year);
@@ -159,5 +165,7 @@ addMonth(monthYear, count) ==
       );
       return result;  
     )
+pre 0 <= completedMonths(monthYear) + count and  completedMonths(monthYear) + count <= MaxCompletedMonths
+post completedMonths(monthYear) + count = completedMonths(RESULT);
 
 end Months

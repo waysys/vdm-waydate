@@ -12,22 +12,38 @@ module MonthsTest
 imports 
     from DateTypes
         values
-            MaxYear renamed MaxYear,
+            MaxYear renamed MaxYear;
+            MinYear renamed MinYear;
+            January renamed January;
+            February renamed February;
+            December renamed December,
 
-    from Date 
-        types
-            Date renamed Date;
+    from Months 
+        types 
+            MonthYear renamed MonthYear;
 
         values
-            MaxDate renamed MaxDate;
+            MaxCompletedMonths: int renamed MaxCompletedMonths;
+            MaxMonthYear: MonthYear renamed MaxMonthYear;
+            MinMonthYear: MonthYear renamed MinMonthYear;
 
         functions
-            create: nat1 * nat1 * nat1 -> Date renamed create;
-            equals: Date * Date -> bool renamed equals
+            isMonthYear: MonthYear -> bool renamed isMonthYear;
+            completedMonths: MonthYear-> int renamed completedMonths;
+            increment: MonthYear -> MonthYear renamed increment;
+            decrement: MonthYear -> MonthYear renamed decrement;
+            create: nat1 * nat1 -> MonthYear renamed create;
+            createFromMonths: int -> MonthYear renamed createFromMonths;
+            equals: MonthYear * MonthYear -> bool renamed equals;
+
+        operations
+            addMonth: MonthYear * int ==> MonthYear;                        
                     
 exports
     functions
         testAll: () -> bool;
+        testBadIncrement: () -> MonthYear;
+        testBadCreate: () -> bool;
 
 definitions
 
@@ -35,17 +51,64 @@ definitions
 functions
 -------------------------------------------------------------------------------
 
--- test 
+-- testIsMonthYear tests isMonthYear.
+testIsMonthYear: () -> bool
+testIsMonthYear() ==
+    let 
+        monthYear1 = create(January, MinYear),
+        monthYear2 = create(December, MaxYear)
+    in
+        isMonthYear(monthYear1) and 
+        isMonthYear(monthYear2)
+    ;    
 
-testAddMonth: () -> bool
-testAddMonth() ==
-    true;     
+-- testBadCreate checks that a precondition generates and error
+testBadCreate: () -> bool 
+testBadCreate() == 
+    let
+        monthYear = create(13, MinYear)
+    in
+        monthYear = monthYear;
+
+-- testCreateFromMonths tests createFromMonths
+testCreateFromMonths: () -> bool 
+testCreateFromMonths() == 
+    let 
+        monthYear1 = createFromMonths(0),
+        monthYear2 = createFromMonths(MaxCompletedMonths)
+    in 
+        equals(monthYear1, MinMonthYear) and 
+        equals(monthYear2, MaxMonthYear)
+    ;
+
+-- testIncrement tests increment and decrement
+testIncrement: () -> bool 
+testIncrement() == 
+    let 
+        monthYear1 = create(January, MinYear),
+        monthYear2 = increment(monthYear1),
+        monthYear3 = create(February, MinYear)
+    in 
+        monthYear1 = decrement(monthYear2) and 
+        monthYear2 = monthYear3;
+
+-- testBadIncrement tries to increment the MaxMonthYear
+testBadIncrement: () -> MonthYear 
+testBadIncrement() == 
+    let 
+        monthYear = create(December, MaxYear)
+    in 
+        increment(monthYear);
 
 testAll: () -> bool
 testAll() ==
     let 
-        sumTestAddMonth = testAddMonth()
+        sumIsMonthYear = testIsMonthYear(),
+        sumCreateFromMonths = testCreateFromMonths(),
+        sumIncrement = testIncrement()
     in
-        sumTestAddMonth
+        sumIsMonthYear and
+        sumCreateFromMonths and 
+        sumIncrement;
 
 end MonthsTest
