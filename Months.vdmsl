@@ -140,7 +140,7 @@ post completedMonths(RESULT) = completedMonths(monthYear) + 1;
 -- decrement decreases the month year by one month
 decrement: MonthYear -> MonthYear
 decrement(monthYear) == 
-    if monthYear.month = January then create(December, monthYear.month - 1)
+    if monthYear.month = January then create(December, monthYear.year - 1)
     else create(monthYear.month - 1, monthYear.year)
 pre not equals(MinMonthYear, monthYear) 
 post completedMonths(RESULT) = completedMonths(monthYear) - 1;
@@ -156,11 +156,11 @@ addMonth(monthYear, count) ==
     ( dcl result : MonthYear := monthYear,
           index : int := count;
       while index > 0 do (
-        result := increment(monthYear);
+        result := increment(result);
         index := index - 1;
       );
       while index < 0 do (
-        result := decrement(monthYear);
+        result := decrement(result);
         index := index + 1;
       );
       return result;  

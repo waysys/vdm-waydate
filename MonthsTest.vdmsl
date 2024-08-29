@@ -37,13 +37,15 @@ imports
             equals: MonthYear * MonthYear -> bool renamed equals;
 
         operations
-            addMonth: MonthYear * int ==> MonthYear;                        
+            addMonth: MonthYear * int ==> MonthYear renamed addMonth;                        
                     
 exports
     functions
         testAll: () -> bool;
         testBadIncrement: () -> MonthYear;
+        testBadDecrement: () -> MonthYear;
         testBadCreate: () -> bool;
+        testAdd: () -> bool; 
 
 definitions
 
@@ -100,15 +102,37 @@ testBadIncrement() ==
     in 
         increment(monthYear);
 
+-- testBadDecrement tries to decrement the MinMonthYear
+testBadDecrement: () -> MonthYear
+testBadDecrement() == 
+    let 
+        monthYear = create(January, MinYear) 
+    in 
+        decrement(monthYear);
+
+-- testAdd checks the add function
+testAdd: () -> bool 
+testAdd() == 
+    let 
+        monthYear = create(January, 2022),
+        monthYear1 = addMonth(monthYear, 2),
+        monthYear2 = increment(increment(monthYear)),
+        monthYear3 = addMonth(monthYear, -3),
+        monthYear4 = decrement(decrement(decrement(monthYear))) 
+    in 
+        monthYear1 = monthYear2 and monthYear3 = monthYear4;
+
 testAll: () -> bool
 testAll() ==
     let 
         sumIsMonthYear = testIsMonthYear(),
         sumCreateFromMonths = testCreateFromMonths(),
-        sumIncrement = testIncrement()
+        sumIncrement = testIncrement(),
+        sumAdd = testAdd()
     in
         sumIsMonthYear and
         sumCreateFromMonths and 
-        sumIncrement;
+        sumIncrement and 
+        sumAdd;
 
 end MonthsTest
