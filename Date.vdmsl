@@ -10,7 +10,20 @@
 
 module Date
 
-imports
+imports 
+    from Months 
+        types 
+            MonthYear renamed MonthYear;
+
+        functions
+            create: nat1 * nat1 -> MonthYear;
+            daysInMonthYear: MonthYear -> nat1 renamed daysInMonthYear; 
+            getMonth: MonthYear -> nat1;
+            getYear: MonthYear -> nat1;
+
+        operations 
+            addMonth: MonthYear * int ==> MonthYear,
+
     from DateTypes
         values
             MaxYear : nat1 renamed MaxYear;
@@ -59,6 +72,7 @@ exports types struct Date; Order;
 
         operations  addDay : Date * int ==> Date;
                     difference : Date * Date ==> int;
+                    addMonth: Date * int ==> Date;
 
         -- Relational operators >, >=, =, <=, < can also be used
 
@@ -184,6 +198,17 @@ decrement(date) ==
     else create(date.month, date.day - 1, date.year)
 pre date <> MinDate;
 
+-- legalDay returns a valid day given a proposed day and the associated month and year.
+-- If the proposed day is larger than the last day of the month, the last day of the
+-- month is returned.  Otherwise, the proposed day is returned.
+legalDay: MonthYear * nat1 -> nat1
+legalDay(monthYear, proposedDay) ==
+    let
+        lastDayOfMonth = daysInMonthYear(monthYear)
+    in  
+        if proposedDay > lastDayOfMonth then lastDayOfMonth 
+        else proposedDay;
+
 -- ----------------------------------------------------------------------------
 -- Comparison
 -- ----------------------------------------------------------------------------
@@ -263,6 +288,24 @@ difference(date1, date2) ==
         dt1 := decrement(dt1)
     );
     return diff
-   )
+   );
+
+-- addMonths returns a date with the specified number of months (count) in the future of the specified
+-- date, if count is positive.  If count is negative, the computed date is the specified number of
+-- months in the past.
+pure addMonth: Date * int ==> Date
+addMonth(date, count) == 
+    (dcl result : Date := date,
+         monthYear: MonthYear := Months`create(date.month, date.year),
+         month: nat1,
+         day: nat1,
+         year: nat1;
+    monthYear := Months`addMonth(monthYear, count);
+    month := Months`getMonth(monthYear);
+    day := legalDay(monthYear, count);
+    year := Months`getYear(monthYear);
+    result := create(month, day, year);
+    return result
+    );
 
 end Date

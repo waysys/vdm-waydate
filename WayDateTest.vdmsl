@@ -16,15 +16,15 @@ imports
             January : nat1 renamed January;
             February : nat1 renamed February;
             March : nat1 renamed March;
-            April : nat1 renamed April;
-            May : nat1 renamed May;
-            June : nat1 renamed June;
-            July : nat1 renamed July;
+            --April : nat1 renamed April;
+            --May : nat1 renamed May;
+            --June : nat1 renamed June;
+            --July : nat1 renamed July;
             -- August : nat1 renamed August;
-            September : nat1 renamed September;
+            --September : nat1 renamed September;
             October : nat1 renamed October;
-            November : nat1 renamed November;
-            December : nat1 renamed December,
+            November : nat1 renamed November,
+            --December : nat1 renamed December,
 
     from Date 
         types

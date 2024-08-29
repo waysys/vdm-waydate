@@ -41,6 +41,8 @@ exports
         createFromMonths: int -> MonthYear;
         daysInMonthYear: MonthYear -> int;
         equals: MonthYear * MonthYear -> bool;
+        getMonth: MonthYear -> nat1;
+        getYear: MonthYear -> nat1;
 
     operations
         addMonth: MonthYear * int ==> MonthYear;
@@ -103,6 +105,18 @@ createFromMonths(months) ==
         create(month, year)
 pre 0 <= months and months <= MaxCompletedMonths
 post isMonthYear(RESULT) and completedMonths(RESULT) = months;
+
+-- ----------------------------------------------------------------------------
+-- properties
+-- ----------------------------------------------------------------------------
+
+-- return the month from the month-year
+getMonth: MonthYear -> nat1
+getMonth(monthYear) == monthYear.month;
+
+-- return the year from the month-year
+getYear: MonthYear -> nat1
+getYear(monthYear) == monthYear.year;
 
 -- ----------------------------------------------------------------------------
 -- calculations

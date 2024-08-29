@@ -29,7 +29,7 @@ imports
 
         functions
             isMonthYear: MonthYear -> bool renamed isMonthYear;
-            completedMonths: MonthYear-> int renamed completedMonths;
+            --completedMonths: MonthYear-> int renamed completedMonths;
             increment: MonthYear -> MonthYear renamed increment;
             decrement: MonthYear -> MonthYear renamed decrement;
             create: nat1 * nat1 -> MonthYear renamed create;
