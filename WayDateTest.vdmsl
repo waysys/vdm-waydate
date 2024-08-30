@@ -23,8 +23,8 @@ imports
             -- August : nat1 renamed August;
             --September : nat1 renamed September;
             October : nat1 renamed October;
-            November : nat1 renamed November,
-            --December : nat1 renamed December,
+            November : nat1 renamed November;
+            December : nat1 renamed December,
 
     from Date 
         types
@@ -39,6 +39,8 @@ imports
             after: Date * Date -> bool;
             before: Date * Date -> bool;
             equals: Date * Date -> bool;
+            increment: Date -> Date renamed increment;
+            decrement: Date -> Date renamed decrement;
 
         values
             MinDate;
@@ -77,6 +79,8 @@ exports
         testDayOfWeek: () -> bool;
         testConvertFromAbsoluteDate: () -> bool;
         testMaxAndMinDate: () -> bool;
+        testIncrement: () -> bool;
+        testDecrement: () -> bool;
         testAll: () -> bool;
 
 definitions
@@ -154,6 +158,37 @@ testDayOfWeek() ==
 
 -- Tests of additions
 
+-- testIncrement tests the three cases for date increment. 
+testIncrement: () -> bool 
+testIncrement() == 
+    let 
+        date1 = Date`create(December, 31, 2020), -- end of year
+        date1Expected = Date`create(January, 1, 2021), -- beginning of year
+        date2 = Date`create(February, 29, 2020), -- end of month not end of year 
+        date2Expected = Date`create(March, 1, 2020), -- beginning of month
+        date3 = Date`create(February, 28, 2020), -- middle of month
+        date3Expected = Date`create(February, 29, 2020) -- also middle of month
+    in 
+        increment(date1) = date1Expected and 
+        increment(date2) = date2Expected and 
+        increment(date3) = date3Expected;
+
+-- testDecrement tests the three cases of date decrement.decrement 
+testDecrement: () -> bool 
+testDecrement() == 
+    let
+        date1Expected = Date`create(December, 31, 2020), -- end of year
+        date1 = Date`create(January, 1, 2021), -- beginning of year
+        date2Expected = Date`create(February, 29, 2020), -- end of month not end of year 
+        date2 = Date`create(March, 1, 2020), -- beginning of month
+        date3Expected = Date`create(February, 28, 2020), -- middle of month
+        date3 = Date`create(February, 29, 2020) -- also middle of month
+    in 
+        decrement(date1) = date1Expected and 
+        decrement(date2) = date2Expected and 
+        decrement(date3) = date3Expected;
+
+
 testAddDay: () -> bool
 testAddDay() ==
     let 
@@ -173,7 +208,9 @@ testAll() ==
         sumTestConvertFromAbsoluteDate = testConvertFromAbsoluteDate(),
         sumTestMaxAndMinDate = testMaxAndMinDate(),
         sumTestDayOfWeek = testDayOfWeek(),
-        sumTestAdd = testAddDay()
+        sumTestAdd = testAddDay(),
+        sumTestIncrement = testIncrement(),
+        sumTestDecrement = testDecrement()
     in 
         sumTestDayOfYear and 
         sumTestConvertToDate and
@@ -181,6 +218,8 @@ testAll() ==
         sumTestConvertFromAbsoluteDate and 
         sumTestMaxAndMinDate and 
         sumTestDayOfWeek and
-        sumTestAdd;
+        sumTestAdd and 
+        sumTestIncrement and 
+        sumTestDecrement;
         
 end DateTest

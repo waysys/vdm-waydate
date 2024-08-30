@@ -20,6 +20,7 @@ imports
             daysInMonthYear: MonthYear -> nat1 renamed daysInMonthYear; 
             getMonth: MonthYear -> nat1;
             getYear: MonthYear -> nat1;
+            isMonthYear: MonthYear -> bool renamed isMonthYear;
 
         operations 
             addMonth: MonthYear * int ==> MonthYear,
@@ -132,12 +133,14 @@ pre isYear(year);
 -- ----------------------------------------------------------------------------
 
 -- dayOfYear comoputes the day of the year for the specified date.  1-Jan-YYYY is day 1.
+-- (Definitional)
 dayOfYear: Date -> nat1
 dayOfYear(date) ==
     let
         firstOfYear = create(January, FirstDay, date.year)
     in
-        difference(date, firstOfYear) + 1;
+        difference(date, firstOfYear) + 1
+    post isDayOfYear(RESULT, date.year);
 
 -- ----------------------------------------------------------------------------
 -- Constructors
@@ -148,14 +151,16 @@ dayOfYear(date) ==
 create: nat1 * nat1 * nat1 -> Date
 create(month, day, year) ==
     mk_Date(month, day, year)
-pre isValidDate(month, day, year);
+pre isValidDate(month, day, year)
+post isValidDate(RESULT.month, RESULT.day, RESULT.year);
 
 -- createFromDayOfYear constructs a date with a day of year equal to the specified
 -- day of the year.
 createFromDayOfYear: nat1 * nat1 -> Date
 createFromDayOfYear(dayYear, year) ==
     addDay(create(January, FirstDay, year), dayYear - 1)
-pre isDayOfYear(dayYear, year);
+pre isDayOfYear(dayYear, year)
+post isValidDate(RESULT.month, RESULT.day, RESULT.year);
 
 -- ----------------------------------------------------------------------------
 -- Properties
@@ -178,16 +183,17 @@ getYear(date) ==
 -- ----------------------------------------------------------------------------
 
 -- increment adds a day to a date and returns a new date with the result. The MaxDate cannot
--- be incremented.
+-- be incremented. (Definitional)
 increment: Date -> Date
 increment(date) == 
     let 
         lastDayOfMonth = daysInMonth(date.month, date.year)
     in
-        if date.month = December and date.day = LastDay then create(January, FirstDay, date.year + 1)
+        if date.month = December and date.day = lastDayOfMonth then create(January, FirstDay, date.year + 1)
         elseif date.day = lastDayOfMonth then create(date.month + 1, FirstDay, date.year)
         else create(date.month, date.day + 1, date.year)
-pre date <> MaxDate;
+pre date <> MaxDate
+post isValidDate(RESULT.month, RESULT.day, RESULT.year) and date < RESULT;
 
 -- decrement subtracts a day to a date and returns a new date with the result.  The MinDate
 -- cannot be decremented.
@@ -196,25 +202,28 @@ decrement(date) ==
     if date.month = 1 and date.day = 1 then create(12, 31, date.year - 1)
     elseif date.day = 1 then create(date.month - 1, daysInMonth(date.month - 1, date.year), date.year)
     else create(date.month, date.day - 1, date.year)
-pre date <> MinDate;
+pre date <> MinDate
+post isValidDate(RESULT.month, RESULT.day, RESULT.year) and increment(RESULT) = date;
 
 -- legalDay returns a valid day given a proposed day and the associated month and year.
 -- If the proposed day is larger than the last day of the month, the last day of the
--- month is returned.  Otherwise, the proposed day is returned.
+-- month is returned.  Otherwise, the proposed day is returned. (Definitional)
 legalDay: MonthYear * nat1 -> nat1
 legalDay(monthYear, proposedDay) ==
     let
         lastDayOfMonth = daysInMonthYear(monthYear)
     in  
         if proposedDay > lastDayOfMonth then lastDayOfMonth 
-        else proposedDay;
+        else proposedDay 
+pre isMonthYear(monthYear) and 0 < proposedDay and proposedDay <= 31
+post isDay(Months`getMonth(monthYear), RESULT, Months`getYear(monthYear));
 
 -- ----------------------------------------------------------------------------
 -- Comparison
 -- ----------------------------------------------------------------------------
 
 -- compare compares two dates and returns an order type.  If date1 is before date two, compare returns <Before>.
--- If date1 is after date2, compare returns <After>.  If date1 = date2, compare returns <Equal>.
+-- If date1 is after date2, compare returns <After>.  If date1 = date2, compare returns <Equal>. (Definitional)
 compare: Date * Date -> Order
 compare(date1, date2) ==
     if date1.year < date2.year then <Before>

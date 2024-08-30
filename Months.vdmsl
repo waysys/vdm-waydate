@@ -22,7 +22,7 @@ imports
             daysInMonth: nat1 * nat1 -> nat1 renamed daysInMonth;
             isMonth: nat1 -> bool renamed isMonth;
             isYear: nat1 -> bool renamed isYear;
-
+ 
 exports
     types
         MonthYear;
