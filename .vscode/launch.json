@@ -12,10 +12,10 @@
             "defaultName": "DateTest"
         },
         {
-            "name": "Lens config: Debug DateTest`testAll",
+            "name": "Lens config: Launch DateTest`testAll",
             "type": "vdm",
             "request": "launch",
-            "noDebug": false,
+            "noDebug": true,
             "defaultName": "DateTest",
             "command": "p testAll()"
         }

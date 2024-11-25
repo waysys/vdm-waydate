@@ -1,0 +1,32 @@
+-- ----------------------------------------------------------------------------
+--
+-- WeekTest - a module to facilitate tests of Week
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 24 Nov 2024
+--
+-- This module tests the functions 
+-- ----------------------------------------------------------------------------
+
+module WeekTest
+
+imports 
+    from Week
+        types 
+            DayOfWeek renamed DayOfWeek;
+
+        functions
+            weekDay: nat -> DayOfWeek;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+values
+-------------------------------------------------------------------------------
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- Tests 
+
+end WeekTest
