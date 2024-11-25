@@ -99,10 +99,10 @@ values
 -- ----------------------------------------------------------------------------
 
 -- MaxDate is the largest date handled by WayDate.
-MaxDate = create(December, LastDay, MaxYear);
+MaxDate : Date = create(December, LastDay, MaxYear);
 
 -- MinDate is the smallest date handled by WayDate.
-MinDate = create(January, FirstDay, MinYear);
+MinDate : Date = create(January, FirstDay, MinYear);
 
 -- ----------------------------------------------------------------------------
 functions
