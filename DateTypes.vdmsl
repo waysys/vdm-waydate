@@ -63,24 +63,24 @@ MaxYear : nat1 = 3999;
 MinYear : nat1 = 1601;
 
 -- Months
-January = 1;
-February = 2;
-March = 3;
-April = 4;
-May = 5;
-June = 6;
-July = 7;
-August = 8;
-September = 9;
-October = 10;
-November = 11;
-December = 12;
+January : nat1 = 1;
+February : nat1 = 2;
+March : nat1 = 3;
+April : nat1 = 4;
+May : nat1 = 5;
+June : nat1 = 6;
+July : nat1 = 7;
+August : nat1 = 8;
+September : nat1 = 9;
+October : nat1 = 10;
+November : nat1 = 11;
+December : nat1 = 12;
 
 -- FirstDay is the first day of the month
-FirstDay = 1;
+FirstDay : nat1 = 1;
 
 -- LastDay is the last day of December
-LastDay = 31;
+LastDay  : nat1 = 31;
 
 -- daysPerMonth is the number of days in each month in a non-leap year.
 daysPerMonth : DaysPerMonth = {

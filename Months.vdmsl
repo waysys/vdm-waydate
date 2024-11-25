@@ -63,13 +63,13 @@ values
 
 -- MaxMonths is the maximum number of months that can be represented in a month-year.
 -- It is the number of months of MaxDate.
-MaxCompletedMonths = 12 * (MaxYear - MinYear) + December - 1;
+MaxCompletedMonths : nat1 = 12 * (MaxYear - MinYear) + December - 1;
 
 -- MaxMonthYear is the maximum month-year.
-MaxMonthYear = create(December, MaxYear);
+MaxMonthYear : MonthYear = create(December, MaxYear);
 
 -- MinMonthYear is the minimum month-year.
-MinMonthYear = create(January, MinYear);
+MinMonthYear : MonthYear = create(January, MinYear);
 
 -- ----------------------------------------------------------------------------
 functions
