@@ -18,7 +18,7 @@ imports
             February renamed February;
             December renamed December,
 
-    from Months 
+    from MonthYear 
         types 
             MonthYear renamed MonthYear;
 

@@ -1,38 +1,26 @@
 -- ----------------------------------------------------------------------------
 --
--- Types - specification of basic types
+-- Month - calculations involving years
 -- Author: William Shaffer (wshaffer@waysysweb.com)
--- Date:   23 Aug 2024
+-- Date:   28 November 2024
 --
--- This module specifies basic types and constants for WayDate.
+-- This module defines characteristics of months.
+-- Copyright (c) 2024 William Shaffer
 -- ----------------------------------------------------------------------------
 
-module DateTypes
+module Year
 
 exports
     values
         MaxYear : nat1;
         MinYear : nat1;
  
-        FirstDay : nat1;
-        LastDay : nat1;
-
     functions
-        -- Validations
         isYear: nat1 -> bool;
-        isDay: nat1 * nat1 * nat1 -> bool;
-
-        -- Data Providers
         isLeapYear: nat1 -> bool;
         daysInYear: nat1 -> nat1;
 
 definitions
-
--- ----------------------------------------------------------------------------
-types
--- ----------------------------------------------------------------------------
-
-
 
 -- ----------------------------------------------------------------------------
 values
@@ -46,18 +34,8 @@ MaxYear : nat1 = 3999;
 -- class for dates prior to 1582. 1601 is a convenient year for the epoch.
 MinYear : nat1 = 1601;
 
--- FirstDay is the first day of the month
-FirstDay : nat1 = 1;
-
--- LastDay is the last day of December
-LastDay  : nat1 = 31;
-
 -- ----------------------------------------------------------------------------
 functions
--- ----------------------------------------------------------------------------
-
--- ----------------------------------------------------------------------------
--- Validation Functions --
 -- ----------------------------------------------------------------------------
 
 -- isYear returns true if the year is a valid year
@@ -65,19 +43,7 @@ isYear: nat1 -> bool
 isYear(year) == 
     if year < MinYear or year > MaxYear then false 
     else true;
-
--- isDay returns true if day is a valid day given the specified month and year.
-isDay: nat1 * nat1 * nat1 -> bool
-isDay(month, day, year) ==
-    if day > daysInMonth(month, year) then false
-    else if day < 1 then false
-    else true
-pre isMonth(month) and isYear(year);
     
--- ----------------------------------------------------------------------------
--- Data providers 
--- ----------------------------------------------------------------------------
-
 -- isLeapYear returns true if the year is a leap year.
 isLeapYear: nat1 -> bool
 isLeapYear(year) ==
@@ -86,12 +52,10 @@ isLeapYear(year) ==
     elseif year mod 4 = 0 then true 
     else false;
 
-
-
 -- daysInYear returns the number of days in the specified year.
 daysInYear: nat1 -> nat1
 daysInYear(year) ==
     if isLeapYear(year) then 366
     else 365;    
 
-end DateTypes
+end Year

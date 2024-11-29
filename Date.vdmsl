@@ -11,7 +11,7 @@
 module Date
 
 imports 
-    from Months 
+    from MonthYear 
         types 
             MonthYear renamed MonthYear;
 
@@ -216,7 +216,7 @@ legalDay(monthYear, proposedDay) ==
         if proposedDay > lastDayOfMonth then lastDayOfMonth 
         else proposedDay 
 pre isMonthYear(monthYear) and 0 < proposedDay and proposedDay <= 31
-post isDay(Months`getMonth(monthYear), RESULT, Months`getYear(monthYear));
+post isDay(MonthYear`getMonth(monthYear), RESULT, MonthYear`getYear(monthYear));
 
 -- ----------------------------------------------------------------------------
 -- Comparison
@@ -305,14 +305,14 @@ difference(date1, date2) ==
 pure addMonth: Date * int ==> Date
 addMonth(date, count) == 
     (dcl result : Date := date,
-         monthYear: MonthYear := Months`create(date.month, date.year),
+         monthYear: MonthYear := MonthYear`create(date.month, date.year),
          month: nat1,
          day: nat1,
          year: nat1;
-    monthYear := Months`addMonth(monthYear, count);
-    month := Months`getMonth(monthYear);
+    monthYear := MonthYear`addMonth(monthYear, count);
+    month := MonthYear`getMonth(monthYear);
     day := legalDay(monthYear, count);
-    year := Months`getYear(monthYear);
+    year := MonthYear`getYear(monthYear);
     result := create(month, day, year);
     return result
     );

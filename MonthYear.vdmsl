@@ -1,13 +1,15 @@
 -- ----------------------------------------------------------------------------
 --
--- Months - calculations involving months-years
+-- MonthYear - calculations involving months-years
 -- Author: William Shaffer (wshaffer@waysysweb.com)
 -- Date:   19 Aug 2024
 --
--- This module performs calculations related to months.
+-- This module performs calculations related to month year combinations.
+--
+-- Copyright (c) 2024 William Shaffer 
 -- ----------------------------------------------------------------------------
 
-module Months
+module MonthYear
 
 imports 
     from DateTypes 
@@ -182,4 +184,4 @@ addMonth(monthYear, count) ==
 pre 0 <= completedMonths(monthYear) + count and  completedMonths(monthYear) + count <= MaxCompletedMonths
 post completedMonths(monthYear) + count = completedMonths(RESULT);
 
-end Months
+end MonthYear
