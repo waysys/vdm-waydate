@@ -17,31 +17,31 @@
 module Holidays
 
 imports
-    from DateTypes
-        values 
-            -- Months
-            January : nat1 renamed January;
-            February : nat1 renamed February;
-            -- March : nat1 renamed March;
-            April : nat1 renamed April;
-            May : nat1 renamed May;
-            June : nat1 renamed June;
-            July : nat1 renamed July;
-            -- August : nat1 renamed August;
-            September : nat1 renamed September;
-            October : nat1 renamed October;
-            November : nat1 renamed November;
-            December : nat1 renamed December;
+    from Month
+        types
+            Month renamed Month;
 
-        functions
-            daysInMonth: nat1 * nat1 -> nat1,
+        values
+            January: Month renamed January;
+            February : Month renamed February;
+            April : Month renamed April;
+            May : Month renamed May;
+            June : Month renamed June;
+            July : Month renamed July;
+            September : Month renamed September;
+            October : Month renamed October;
+            November : Month renamed November;
+            December: Month renamed December;
+
+        functions 
+            daysInMonth: Month * nat1 -> nat1,
 
     from Date
         types 
             Date renamed Date;
 
         functions
-            create: nat1 * nat1 * nat1 -> Date;
+            create: Month * nat1 * nat1 -> Date;
             increment: Date -> Date;
             decrement: Date -> Date;
             before: Date * Date -> bool;
@@ -97,8 +97,8 @@ exports
 
             -- support functions
             observedDate: Date -> Date;
-            nthDayOfMonth: nat1 * DayOfWeek * nat1 * nat1 -> Date;
-            lastWeekDayOfMonth: nat1 * nat1 * DayOfWeek -> Date;
+            nthDayOfMonth: Month * DayOfWeek * nat1 * nat1 -> Date;
+            lastWeekDayOfMonth: Month * nat1 * DayOfWeek -> Date;
             dayOfWeekAfter: Date * DayOfWeek -> Date;
 
 definitions
@@ -287,7 +287,7 @@ getObservedDayOfWeek(holiday) ==
 
 -- createFixedHoliday creates a Holiday structure for the specified fixed 
 -- US federal holiday.
-createFixedHoliday: seq of char * nat1 * nat1 * nat1  -> Holiday
+createFixedHoliday: seq of char * Month * nat1 * nat1  -> Holiday
 createFixedHoliday(name, month, day, year) ==
     let 
         actualDate = Date`create(month, day, year),
@@ -299,7 +299,7 @@ pre year >= 1900;
 
 -- createFloatingHoliday creates a Holiday structure for a floating 
 -- US federal holiday.  Cannot be used for Memorial nat1.
-createFloatingHoliday: seq of char * nat1 * DayOfWeek * nat1 * nat1  -> Holiday
+createFloatingHoliday: seq of char * Month * DayOfWeek * nat1 * nat1  -> Holiday
 createFloatingHoliday(name, month, dayOfWeek, position, year) ==
    let 
         actualDate = nthDayOfMonth(month , dayOfWeek, position, year),
@@ -324,7 +324,7 @@ observedDate(date) ==
 
 -- nthDayOfMonth calculates the positional date based on the month, day of the week,
 -- the position in the month (first, second, third, etc.), and year. 
-nthDayOfMonth: nat1 * DayOfWeek * nat1 * nat1 -> Date
+nthDayOfMonth: Month * DayOfWeek * nat1 * nat1 -> Date
 nthDayOfMonth(month, dayOfWeek, position, year) ==
     let
         day = 1,
@@ -334,7 +334,7 @@ nthDayOfMonth(month, dayOfWeek, position, year) ==
 pre position >= 1 and position <= 4;
 
 -- computeNthDayOfMOnth performs the actual computation of the nthDayOfThe nat1. 
-computeNthDayOfMonth: nat1 * DayOfWeek * nat1 * Date -> Date
+computeNthDayOfMonth: Month * DayOfWeek * nat1 * Date -> Date
 computeNthDayOfMonth(month, dayOfWeek, position, date) ==
     if position = 1 and Week`dayOfWeek(date) = dayOfWeek
         then date
@@ -345,16 +345,16 @@ pre position >= 1 and position <= 4
 measure is not yet specified;
 
 -- lastWeekDayOfMonth calculates the last day of the week in a month and year. 
-lastWeekDayOfMonth: nat1 * nat1 * DayOfWeek -> Date
+lastWeekDayOfMonth: Month * nat1 * DayOfWeek -> Date
 lastWeekDayOfMonth(month, year, dayOfWeek) ==
     let
-        daysInMonth = DateTypes`daysInMonth(month, year),
+        daysInMonth = Month`daysInMonth(month, year),
         lastDateOfMonth = Date`create(month, daysInMonth, year)
     in
         computeLastWeekDayOfMonth(month, year, dayOfWeek, lastDateOfMonth);
 
 -- computeLastWeekDayOfMonth calculates the date of the last day of the week. 
-computeLastWeekDayOfMonth: nat1 * nat1 * DayOfWeek * Date -> Date
+computeLastWeekDayOfMonth: Month * nat1 * DayOfWeek * Date -> Date
 computeLastWeekDayOfMonth(month, year, dayOfWeek, date) == 
     if Week`dayOfWeek(date) = dayOfWeek then date
     else computeLastWeekDayOfMonth(month, year, dayOfWeek, Date`decrement(date))

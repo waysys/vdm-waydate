@@ -19,12 +19,29 @@ exports
     types
         Month;
 
+    values
+        January: Month;
+        February : Month;
+        March : Month;
+        April : Month;
+        May : Month;
+        June : Month;
+        July : Month;
+        August : Month;
+        September : Month;
+        October : Month;
+        November : Month;
+        December: Month;
+
     functions
         isMonthNumber: nat1 -> bool;
         monthToNat: Month -> nat1;
         natToMonth: nat1 -> Month;
         toString: Month -> seq of char;
-        daysInMonth: Month * nat1 -> nat1
+        daysInMonth: Month * nat1 -> nat1;
+        before: Month * Month -> bool;
+        priorMonth: Month -> Month;
+        nextMonth: Month -> Month;
 
 definitions
 
@@ -43,7 +60,8 @@ Month = <January>
     |   <September>
     |   <October>
     |   <November>
-    |   <December>;
+    |   <December>
+ord month1 < month2 == monthToNat(month1) < monthToNat(month2);
 
 MonthInt = map  Month to nat1;
 MonthString = map Month to (seq of char);
@@ -113,6 +131,19 @@ monthList : seq of Month = [
     <December>
 ];
 
+January : Month = <January>;
+February : Month = <February>;
+March : Month = <March>;
+April : Month = <April>;
+May : Month = <May>;
+June : Month = <June>;
+July : Month = <July>;
+August : Month = <August>;
+September : Month = <September>;
+October : Month = <October>;
+November : Month = <November>;
+December : Month = <December>;
+
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
@@ -143,7 +174,24 @@ toString(month) ==
 -- daysInMonth return the number of days in the specified month and year.
 daysInMonth: Month * nat1 -> nat1
 daysInMonth(month, year) ==
-    if isLeapYear(year) and (month = <February>) then daysPerMonth(2) + 1
+    if isLeapYear(year) and (month = <February>) then daysPerMonth(month) + 1
     else daysPerMonth(month);
+
+-- before returns true if the first month is before the second month. 
+before: Month * Month -> bool 
+before(month1, month2) == 
+    monthToNat(month1) < monthToNat(month2);
+
+-- priorMonth returns the month before the specified month
+priorMonth: Month -> Month
+priorMonth(month) ==
+    if month = January then December 
+    else natToMonth(monthToNat(month) - 1);
+
+-- nextMonth returns the month after the specified month
+nextMonth: Month -> Month 
+nextMonth(month) == 
+    if month = December then January 
+    else natToMonth(monthToNat(month) + 1);
 
 end Month

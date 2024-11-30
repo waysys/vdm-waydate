@@ -12,9 +12,9 @@
 module AbsoluteDate
 
 imports 
-    from DateTypes
-        values
-            MinYear renamed MinYear,
+    from Year 
+        values 
+            MinYear : nat1 renamed MinYear, 
 
     from Date 
         types

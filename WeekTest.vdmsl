@@ -14,9 +14,6 @@ imports
         types 
             DayOfWeek renamed DayOfWeek;
 
-        functions
-            weekDay: nat -> DayOfWeek;
-
 definitions
 
 -- ----------------------------------------------------------------------------

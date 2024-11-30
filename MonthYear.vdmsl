@@ -12,18 +12,32 @@
 module MonthYear
 
 imports 
-    from DateTypes 
-        values
+    from Year 
+        values 
             MaxYear : nat1 renamed MaxYear;
             MinYear : nat1 renamed MinYear;
-            -- Months
-            January : nat1 renamed January;
-            December : nat1 renamed December;
 
         functions
-            daysInMonth: nat1 * nat1 -> nat1 renamed daysInMonth;
-            isMonth: nat1 -> bool renamed isMonth;
-            isYear: nat1 -> bool renamed isYear;
+            isYear : nat1 -> bool renamed isYear,
+
+    from Month
+        types
+            Month renamed Month;
+
+        values
+            January : Month renamed January;
+            December : Month renamed December;
+
+        functions
+            daysInMonth: Month * nat1 -> nat1 renamed daysInMonth;
+            monthToNat: Month -> nat1 renamed monthToNat;
+            natToMonth: nat1 -> Month renamed natToMonth;
+            priorMonth: Month -> Month renamed priorMonth;
+            nextMonth: Month -> Month renamed nextMonth,
+
+    from Day
+        functions 
+            isDay: Month * nat1 * nat1 -> bool renamed isDay;
  
 exports
     types
@@ -39,12 +53,13 @@ exports
         completedMonths: MonthYear-> int;
         increment: MonthYear -> MonthYear;
         decrement: MonthYear -> MonthYear;
-        create: nat1 * nat1 -> MonthYear;
-        createFromMonths: int -> MonthYear;
+        create: Month * nat1 -> MonthYear
+        createFromMonths: nat1 -> MonthYear;
         daysInMonthYear: MonthYear -> int;
         equals: MonthYear * MonthYear -> bool;
-        getMonth: MonthYear -> nat1;
+        getMonth: MonthYear -> Month;
         getYear: MonthYear -> nat1;
+        legalDay: MonthYear * nat1 -> nat1
 
     operations
         addMonth: MonthYear * int ==> MonthYear;
@@ -55,9 +70,9 @@ definitions
 types
 -- ----------------------------------------------------------------------------
 
-MonthYear :: month : nat1
+MonthYear :: month : Month
              year  : nat1
-inv mk_MonthYear(month, year) == isMonth(month) and isYear(year);
+inv mk_MonthYear(month, year) == isYear(year) and month = month;
 
 -- ----------------------------------------------------------------------------
 values
@@ -65,7 +80,7 @@ values
 
 -- MaxMonths is the maximum number of months that can be represented in a month-year.
 -- It is the number of months of MaxDate.
-MaxCompletedMonths : nat1 = 12 * (MaxYear - MinYear) + December - 1;
+MaxCompletedMonths : nat1 = 12 * (MaxYear - MinYear) + monthToNat(December) - 1;
 
 -- MaxMonthYear is the maximum month-year.
 MaxMonthYear : MonthYear = create(December, MaxYear);
@@ -84,25 +99,26 @@ functions
 -- isMonthYear returns true if the MonthYear is valid.
 isMonthYear: MonthYear -> bool
 isMonthYear(monthYear) ==
-    isMonth(monthYear.month) and isYear(monthYear.year);
+    isYear(monthYear.year);
 
 -- ----------------------------------------------------------------------------
 -- constructors
 -- ----------------------------------------------------------------------------
 
 -- create creates a MonthYear from the specified month and year;
-create: nat1 * nat1 -> MonthYear
+create: Month * nat1 -> MonthYear
 create(month, year) ==
     mk_MonthYear(month, year)
-pre isMonth(month) and isYear(year)
+pre isYear(year)
 post isMonthYear(RESULT);
 
 -- createFromMonths converts completed months to the equivalent month and year. 
-createFromMonths: int -> MonthYear
+createFromMonths: nat1 -> MonthYear
 createFromMonths(months) ==
     let
         year = months div 12 + MinYear,
-        month = months mod 12 + 1
+        remainingMonths = months mod 12 + 1,
+        month = natToMonth(remainingMonths)
     in
         create(month, year)
 pre 0 <= months and months <= MaxCompletedMonths
@@ -113,7 +129,7 @@ post isMonthYear(RESULT) and completedMonths(RESULT) = months;
 -- ----------------------------------------------------------------------------
 
 -- return the month from the month-year
-getMonth: MonthYear -> nat1
+getMonth: MonthYear -> Month
 getMonth(monthYear) == monthYear.month;
 
 -- return the year from the month-year
@@ -132,7 +148,7 @@ completedMonths(monthYear) ==
         month = monthYear.month,
         year = monthYear.year
     in
-        12 * (year - MinYear) + (month - 1);
+        12 * (year - MinYear) + (monthToNat(month) - 1);
 
 -- daysInMonthYear returns the number of days in a month-year. 
 daysInMonthYear: MonthYear -> int 
@@ -149,7 +165,7 @@ equals(monthYear1, monthYear2) ==
 increment: MonthYear -> MonthYear
 increment(monthYear) == 
     if monthYear.month = December then create(January, monthYear.year + 1)
-    else create(monthYear.month + 1, monthYear.year)
+    else create(nextMonth(monthYear.month), monthYear.year)
 pre not equals(MaxMonthYear, monthYear)
 post completedMonths(RESULT) = completedMonths(monthYear) + 1;
 
@@ -157,9 +173,22 @@ post completedMonths(RESULT) = completedMonths(monthYear) + 1;
 decrement: MonthYear -> MonthYear
 decrement(monthYear) == 
     if monthYear.month = January then create(December, monthYear.year - 1)
-    else create(monthYear.month - 1, monthYear.year)
+    else create(priorMonth(monthYear.month), monthYear.year)
 pre not equals(MinMonthYear, monthYear) 
 post completedMonths(RESULT) = completedMonths(monthYear) - 1;
+
+-- legalDay returns a valid day given a proposed day and the associated month and year.
+-- If the proposed day is larger than the last day of the month, the last day of the
+-- month is returned.  Otherwise, the proposed day is returned. (Definitional)
+legalDay: MonthYear * nat1 -> nat1
+legalDay(monthYear, proposedDay) ==
+    let
+        lastDayOfMonth = daysInMonthYear(monthYear)
+    in  
+        if proposedDay > lastDayOfMonth then lastDayOfMonth 
+        else proposedDay 
+pre isMonthYear(monthYear) and 0 < proposedDay and proposedDay <= 31
+post isDay(getMonth(monthYear), RESULT, getYear(monthYear));
 
 -- ----------------------------------------------------------------------------
 operations

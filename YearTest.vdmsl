@@ -37,7 +37,7 @@ testIsYear() ==
     let 
         result1 = isYear(MinYear),
         result2 = isYear(MaxYear),
-        result3 = not isYear(Minyear - 1),
+        result3 = not isYear(MinYear - 1),
         result4 = not isYear(MaxYear + 1)
     in
         result1 and result2 and result3 and result4;
@@ -49,7 +49,7 @@ testIsLeapYear() ==
         result1 = isLeapYear(2000),
         result2 = isLeapYear(1904),
         result3 = isLeapYear(1900),
-        result4 = isLeapsYear(1901)
+        result4 = isLeapYear(1901)
     in 
         result1 and result2 and result3 and result4;
 
@@ -60,7 +60,7 @@ testDaysInYear() ==
         result1 = daysInYear(2001),
         result2 = daysInYear(2000)
     in 
-        result1 and result2;
+        (result1 = 365) and (result2 = 366);
 
 -- testAll checks that all functions succeeded
 testAll: () -> bool 

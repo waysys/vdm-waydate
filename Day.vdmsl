@@ -1,0 +1,62 @@
+-- ----------------------------------------------------------------------------
+--
+-- Day - calculations involving days
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date:   29 November 2024
+--
+-- This module defines characteristics of days.
+-- Copyright (c) 2024 William Shaffer
+-- ----------------------------------------------------------------------------
+
+module Day 
+
+imports 
+    from Year 
+        functions 
+            isYear: nat1 -> bool renamed isYear,
+
+    from Month 
+        types 
+            Month renamed Month
+
+        functions 
+            daysInMonth: Month * nat1 -> nat1 renamed daysInMonth;
+
+exports
+    values 
+        FirstDay: nat1;
+        LastDay: nat1;
+
+    functions 
+        isDay: Month * nat1 * nat1 -> bool;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+types
+-- ----------------------------------------------------------------------------
+
+
+-- ----------------------------------------------------------------------------
+values
+-- ----------------------------------------------------------------------------
+
+-- FirstDay is the first day of the month
+FirstDay : nat1 = 1;
+
+-- LastDay is the last day of December
+LastDay  : nat1 = 31;
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- isDay returns true if day is a valid day given the specified month and year.
+isDay: Month * nat1 * nat1 -> bool
+isDay(month, day, year) ==
+    if day > daysInMonth(month, year) then false
+    else if day < 1 then false
+    else true
+pre isYear(year);
+
+end Day

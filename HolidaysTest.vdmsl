@@ -9,21 +9,21 @@
 module HolidaysTest
 
 imports
-    from DateTypes
-        values 
-            -- Months
-            January : nat1 renamed January;
-            February : nat1 renamed February;
-            -- March : nat1 renamed March;
-            April : nat1 renamed April;
-            May : nat1 renamed May;
-            June : nat1 renamed June;
-            July : nat1 renamed July;
-            -- August : nat1 renamed August;
-            September : nat1 renamed September;
-            October : nat1 renamed October;
-            November : nat1 renamed November;
-            December : nat1 renamed December,
+    from Month
+        types
+            Month renamed Month;
+
+        values
+            January: Month renamed January;
+            February : Month renamed February;
+            April : Month renamed April;
+            May : Month renamed May;
+            June : Month renamed June;
+            July : Month renamed July;
+            September : Month renamed September;
+            October : Month renamed October;
+            November : Month renamed November;
+            December: Month renamed December,
 
     from Date 
         types
@@ -32,9 +32,9 @@ imports
         functions
             -- Properties
             getDay: Date -> nat1;
-            getMonth: Date -> nat1;
+            getMonth: Date -> Month;
             getYear: Date -> nat1;        
-            create: nat1 * nat1 * nat1 -> Date,
+            create: Month * nat1 * nat1 -> Date,
 
    from Week
         types
@@ -73,7 +73,7 @@ imports
 
             -- support functions
             observedDate: Date -> Date;
-            nthDayOfMonth: nat1 * DayOfWeek * nat1 * nat1 -> Date;
+            nthDayOfMonth: Month * DayOfWeek * nat1 * nat1 -> Date;
             dayOfWeekAfter: Date * DayOfWeek -> Date;
 
 exports
@@ -124,7 +124,7 @@ testOfNewYearsDay1() ==
         expObservedDate = Holidays`observedDate(expNewYears),
         newYearsHoliday = Holidays`newYearsDay(2023)
     in 
-        Date`getMonth(expObservedDate) = 1 and 
+        Date`getMonth(expObservedDate) = January and 
         Date`getYear(expObservedDate) = 2023 and 
         Date`getDay(expObservedDate) = 2 and
         Holidays`getActualDate(newYearsHoliday) = expNewYears and 

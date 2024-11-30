@@ -11,47 +11,59 @@
 module Date
 
 imports 
+    from Year 
+        values 
+            MaxYear : nat1 renamed MaxYear;
+            MinYear : nat1 renamed MinYear;
+
+        functions
+            daysInYear: nat1 -> nat1 renamed daysInYear;
+            isYear : nat1 -> bool renamed isYear,
+
+    from Month
+        types
+            Month renamed Month;
+
+        values
+            January : Month renamed January;
+            December : Month renamed December;
+
+        functions
+            daysInMonth: Month * nat1 -> nat1 renamed daysInMonth;
+            before: Month * Month -> bool;
+            priorMonth: Month -> Month renamed priorMonth;
+            nextMonth: Month -> Month renamed nextMonth,
+
+    from Day
+        values 
+            FirstDay: nat1 renamed FirstDay;
+            LastDay: nat1 renamed LastDay;
+
+        functions 
+            isDay: Month * nat1 * nat1 -> bool renamed isDay,
+
     from MonthYear 
         types 
             MonthYear renamed MonthYear;
 
         functions
-            create: nat1 * nat1 -> MonthYear;
-            daysInMonthYear: MonthYear -> nat1 renamed daysInMonthYear; 
-            getMonth: MonthYear -> nat1;
+            create: Month * nat1 -> MonthYear;
+            getMonth: MonthYear -> Month;
             getYear: MonthYear -> nat1;
-            isMonthYear: MonthYear -> bool renamed isMonthYear;
+            legalDay: MonthYear * nat1 -> nat1 renamed legalDay;
 
         operations 
-            addMonth: MonthYear * int ==> MonthYear,
+            addMonth: MonthYear * int ==> MonthYear;
 
-    from DateTypes
-        values
-            MaxYear : nat1 renamed MaxYear;
-            MinYear : nat1 renamed MinYear;
-            January : nat1 renamed January;
-            December : nat1 renamed December;
-            FirstDay : nat1 renamed FirstDay;
-            LastDay : nat1 renamed LastDay;
-
-        functions
-            -- validations
-            isDay : nat1 * nat1 * nat1 -> bool renamed isDay;
-            isYear : nat1 -> bool renamed isYear;
-
-            -- data providers
-            daysInYear: nat1 -> nat1 renamed daysInYear;
-            daysInMonth: nat1 * nat1 -> nat1 renamed daysInMonth;
-             
 exports types struct Date; Order; 
         functions   
             -- Constructors
-            create: nat1 * nat1 * nat1 -> Date;
+            create: Month * nat1 * nat1 -> Date;
             createFromDayOfYear: nat1 * nat1 -> Date;
 
             -- Properties
             getDay: Date -> nat1;
-            getMonth: Date -> nat1;
+            getMonth: Date -> Month;
             getYear: Date -> nat1;
 
             -- Information Functions
@@ -83,13 +95,13 @@ definitions
 types
 -- ---------------------------------------------------------------------------- 
 
-Date :: month : nat1
+Date :: month : Month
         day   : nat1
         year  : nat1
 inv mk_Date(month, day, year) == isValidDate(month, day, year)
 ord mk_Date(month1, day1, year1) < mk_Date(month2, day2, year2) ==
     year1 < year2 or 
-    (year1 = year2 and month1 < month2) or 
+    (year1 = year2 and Month`before(month1, month2)) or 
     (year1 = year2 and month1 = month2 and day1 < day2);
 
 Order = <Before> | <Equal> | <After>;
@@ -114,7 +126,7 @@ functions
 
 -- isValidDate returns true if the specified month, day, and year 
 -- form a valid date.
-isValidDate: nat1 * nat1 * nat1 -> bool
+isValidDate: Month * nat1 * nat1 -> bool
 isValidDate(month, day, year) == 
     if isDay(month, day, year) then true 
     else false;
@@ -148,7 +160,7 @@ dayOfYear(date) ==
 
 -- create constructs a date given the specified month, day, and year.  The day
 -- must be a valid day given the month and year.
-create: nat1 * nat1 * nat1 -> Date
+create: Month * nat1 * nat1 -> Date
 create(month, day, year) ==
     mk_Date(month, day, year)
 pre isValidDate(month, day, year)
@@ -166,7 +178,7 @@ post isValidDate(RESULT.month, RESULT.day, RESULT.year);
 -- Properties
 -- ----------------------------------------------------------------------------
 
-getMonth: Date -> nat1
+getMonth: Date -> Month
 getMonth(date) == 
     date.month;
 
@@ -187,10 +199,11 @@ getYear(date) ==
 increment: Date -> Date
 increment(date) == 
     let 
-        lastDayOfMonth = daysInMonth(date.month, date.year)
+        lastDayOfMonth = daysInMonth(date.month, date.year),
+        nextMnth = nextMonth(date.month)
     in
         if date.month = December and date.day = lastDayOfMonth then create(January, FirstDay, date.year + 1)
-        elseif date.day = lastDayOfMonth then create(date.month + 1, FirstDay, date.year)
+        elseif date.day = lastDayOfMonth then create(nextMnth, FirstDay, date.year)
         else create(date.month, date.day + 1, date.year)
 pre date <> MaxDate
 post isValidDate(RESULT.month, RESULT.day, RESULT.year) and date < RESULT;
@@ -199,24 +212,15 @@ post isValidDate(RESULT.month, RESULT.day, RESULT.year) and date < RESULT;
 -- cannot be decremented.
 decrement: Date -> Date
 decrement(date) ==
-    if date.month = 1 and date.day = 1 then create(12, 31, date.year - 1)
-    elseif date.day = 1 then create(date.month - 1, daysInMonth(date.month - 1, date.year), date.year)
-    else create(date.month, date.day - 1, date.year)
+    let 
+        priorMnth = priorMonth(date.month),
+        lastDayOfMonth = daysInMonth(priorMnth, date.year)
+    in 
+        if date.month = January and date.day = 1 then create(December, 31, date.year - 1)
+        elseif date.day = 1 then create(priorMnth, lastDayOfMonth, date.year)
+        else create(date.month, date.day - 1, date.year)
 pre date <> MinDate
 post isValidDate(RESULT.month, RESULT.day, RESULT.year) and increment(RESULT) = date;
-
--- legalDay returns a valid day given a proposed day and the associated month and year.
--- If the proposed day is larger than the last day of the month, the last day of the
--- month is returned.  Otherwise, the proposed day is returned. (Definitional)
-legalDay: MonthYear * nat1 -> nat1
-legalDay(monthYear, proposedDay) ==
-    let
-        lastDayOfMonth = daysInMonthYear(monthYear)
-    in  
-        if proposedDay > lastDayOfMonth then lastDayOfMonth 
-        else proposedDay 
-pre isMonthYear(monthYear) and 0 < proposedDay and proposedDay <= 31
-post isDay(MonthYear`getMonth(monthYear), RESULT, MonthYear`getYear(monthYear));
 
 -- ----------------------------------------------------------------------------
 -- Comparison
@@ -227,7 +231,7 @@ post isDay(MonthYear`getMonth(monthYear), RESULT, MonthYear`getYear(monthYear));
 compare: Date * Date -> Order
 compare(date1, date2) ==
     if date1.year < date2.year then <Before>
-    elseif date1.year = date2.year and date1.month < date2.month then <Before>
+    elseif date1.year = date2.year and Month`before(date1.month, date2.month) then <Before>
     elseif date1.year = date2.year and date1.month = date2.month and date1.day < date2.day then <Before>
     elseif date1.year = date2.year and date1.month = date2.month and date1.day = date2.day then <Equal>
     else <After>;
@@ -306,7 +310,7 @@ pure addMonth: Date * int ==> Date
 addMonth(date, count) == 
     (dcl result : Date := date,
          monthYear: MonthYear := MonthYear`create(date.month, date.year),
-         month: nat1,
+         month: Month,
          day: nat1,
          year: nat1;
     monthYear := MonthYear`addMonth(monthYear, count);

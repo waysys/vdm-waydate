@@ -10,6 +10,14 @@
 module DateRangeTest
 
 imports
+    from Month
+        types
+            Month renamed Month;
+
+        values
+            June : Month renamed June;
+            October : Month renamed October,
+
     from Date
         types 
             Date renamed Date;
@@ -19,7 +27,7 @@ imports
             MaxDate;
 
         functions
-            create: nat1 * nat1 * nat1 -> Date,
+            create: Month * nat1 * nat1 -> Date,
 
     from DateRange
         types
@@ -55,12 +63,12 @@ values
 
 maxDateRange = DateRange`create(Date`MinDate, Date`MaxDate);
 
-date1 = Date`create(6, 1, 2020);
-date2 = Date`create(10, 1, 2021);
+date1 = Date`create(June, 1, 2020);
+date2 = Date`create(October, 1, 2021);
 range1 = DateRange`create(date1, date2);
 
-date3 = Date`create(10, 2, 2021);
-date4 = Date`create(10, 9, 2021);
+date3 = Date`create(October, 2, 2021);
+date4 = Date`create(October, 9, 2021);
 range2 = DateRange`create(date3, date4);
 
 -- ----------------------------------------------------------------------------

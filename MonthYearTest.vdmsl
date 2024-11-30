@@ -10,13 +10,19 @@
 module MonthsTest
 
 imports 
-    from DateTypes
+   from Year 
+        values 
+            MaxYear : nat1 renamed MaxYear;
+            MinYear : nat1 renamed MinYear,
+
+    from Month
+        types
+            Month renamed Month;
+
         values
-            MaxYear renamed MaxYear;
-            MinYear renamed MinYear;
-            January renamed January;
-            February renamed February;
-            December renamed December,
+            January : Month renamed January;
+            February : Month renamed February;
+            December : Month renamed December,
 
     from MonthYear 
         types 
@@ -32,7 +38,7 @@ imports
             --completedMonths: MonthYear-> int renamed completedMonths;
             increment: MonthYear -> MonthYear renamed increment;
             decrement: MonthYear -> MonthYear renamed decrement;
-            create: nat1 * nat1 -> MonthYear renamed create;
+            create: Month * nat1 -> MonthYear renamed create;
             createFromMonths: int -> MonthYear renamed createFromMonths;
             equals: MonthYear * MonthYear -> bool renamed equals;
 
@@ -68,7 +74,7 @@ testIsMonthYear() ==
 testBadCreate: () -> bool 
 testBadCreate() == 
     let
-        monthYear = create(13, MinYear)
+        monthYear = create(December, MinYear - 1)
     in
         monthYear = monthYear;
 
