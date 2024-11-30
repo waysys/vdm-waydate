@@ -17,6 +17,14 @@ imports
 
     from MonthTest 
         functions 
+            testAll: () -> bool,
+
+    from DateTest 
+        functions 
+            testAll: () -> bool,
+
+    from DateRangeTest 
+        functions 
             testAll: () -> bool;
 
 exports 
@@ -34,8 +42,10 @@ runAllTests: () -> bool
 runAllTests() == 
     let 
         yearTest = YearTest`testAll(),
-        monthTest = MonthTest`testAll()
+        monthTest = MonthTest`testAll(),
+        dateTest = DateTest`testAll(),
+        dateRangeTest = DateRangeTest`testAll()
     in 
-        yearTest and monthTest
+        yearTest and monthTest and dateRangeTest and dateTest
 
 end AllTest

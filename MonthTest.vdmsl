@@ -151,7 +151,27 @@ iterateDaysInMonth(index, result) ==
         if index = 12 then result and newResult
         else iterateDaysInMonth(index + 1, result and newResult)
     measure is not yet specified;
- 
+
+testPriorAndNext: () -> bool 
+testPriorAndNext() == 
+    let 
+        nextMonth = Month`nextMonth(December),
+        priorMonth = Month`priorMonth(January),
+        nextMonth2 = Month`nextMonth(January),
+        priorMonth2 = Month`priorMonth(July)
+    in 
+        (priorMonth = December) and (nextMonth = January) and 
+        (nextMonth2 = February) and (priorMonth2 = June);
+
+testBefore: () -> bool 
+testBefore() == 
+    let 
+        result1 = Month`before(January, March),
+        result2 = not Month`before(March, March),
+        result3 = not Month`before(December, January)
+    in 
+        result1 and result2 and result3;
+
 -- testAll invokes all the tests
 testAll: () -> bool 
 testAll() == 
@@ -159,9 +179,11 @@ testAll() ==
         resultIsMonthNumber = testIsMonthNumber(),
         resultMonthToNat = testMonthToNat(),
         resultToString = testToString(),
-        resultDaysInMonth = testDaysInMonth()
+        resultDaysInMonth = testDaysInMonth(),
+        resultPriorAndNext = testPriorAndNext(),
+        resultBefore = testBefore()
     in 
         resultIsMonthNumber and resultMonthToNat and resultToString 
-        and resultDaysInMonth;
+        and resultDaysInMonth and resultPriorAndNext and resultBefore;
 
 end MonthTest

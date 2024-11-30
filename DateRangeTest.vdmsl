@@ -37,23 +37,14 @@ imports
             create: Date * Date -> DateRange;
             inRange: DateRange * Date -> bool; 
             overlaps: DateRange * DateRange -> bool;
-            size: DateRange -> nat,
-
-    from AbsoluteDate
-        types
-            AbsoluteDate renamed AbsoluteDate;
-
-        values
-            MaxAbsoluteDate;  
-
-        functions
-            absoluteDateToNat: AbsoluteDate -> nat1;            
+            size: DateRange -> nat;
 
 exports
     functions
         testDateRange: () -> bool;
         testOverlap: () -> bool;  
-        testSize: () -> bool;         
+        testSize: () -> bool;  
+        testAll: () -> bool;       
 
 definitions
 
@@ -107,8 +98,17 @@ testOverlap() ==
 testSize: () -> bool
 testSize() ==
     let
-        maxSize = DateRange`size(maxDateRange)
+        size = DateRange`size(range1)
     in 
-        maxSize = AbsoluteDate`absoluteDateToNat(AbsoluteDate`MaxAbsoluteDate);
+        size = 488;
+
+testAll: () -> bool 
+testAll() == 
+    let 
+        resultDateRange = testDateRange(),
+        resultOverlap = testOverlap(),
+        resultSize = testSize()
+    in 
+        resultDateRange and resultOverlap and resultSize;
 
 end DateRangeTest

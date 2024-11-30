@@ -34,7 +34,7 @@ exports
         December: Month;
 
     functions
-        isMonthNumber: nat1 -> bool;
+        isMonthNumber: int -> bool;
         monthToNat: Month -> nat1;
         natToMonth: nat1 -> Month;
         toString: Month -> seq of char;
@@ -149,7 +149,7 @@ functions
 -- ----------------------------------------------------------------------------
 
 -- isMonthNumber checks that a number is between 1 through 12
-isMonthNumber: nat1 -> bool 
+isMonthNumber: int -> bool 
 isMonthNumber(monthNumber) ==
     if monthNumber < 1 then false 
     elseif monthNumber > 12 then false 
