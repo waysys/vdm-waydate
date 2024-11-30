@@ -1,0 +1,41 @@
+-- ----------------------------------------------------------------------------
+--
+-- AllTest - executes all the tests for WayDate
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date:   29 November 2024
+--
+-- This module tests the year module 
+-- Copyright (c) 2024 William Shaffer
+-- ----------------------------------------------------------------------------
+
+module AllTest 
+
+imports
+    from YearTest
+        functions
+            testAll: () -> bool,
+
+    from MonthTest 
+        functions 
+            testAll: () -> bool;
+
+exports 
+    functions 
+        runAllTests: () -> bool 
+
+definitions 
+
+-- ----------------------------------------------------------------------------
+functions
+-------------------------------------------------------------------------------
+
+-- runAllTests executes all the tests for Waydate
+runAllTests: () -> bool 
+runAllTests() == 
+    let 
+        yearTest = YearTest`testAll(),
+        monthTest = MonthTest`testAll()
+    in 
+        yearTest and monthTest
+
+end AllTest

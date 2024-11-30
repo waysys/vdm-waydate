@@ -1,0 +1,167 @@
+-- ----------------------------------------------------------------------------
+--
+-- MonthTest - tests of the Month module
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date:   29 November 2024
+--
+-- This module tests the Month module 
+-- Copyright (c) 2024 William Shaffer
+-- ----------------------------------------------------------------------------
+
+module MonthTest 
+
+imports 
+    from Month 
+        types 
+            Month renamed Month;
+
+        values 
+            January : Month renamed January;
+            February : Month renamed February;
+            March : Month renamed March;
+            April : Month renamed April;
+            May : Month renamed May;
+            June : Month renamed June;
+            July : Month renamed July;
+            August : Month renamed August;
+            September : Month renamed September;
+            October : Month renamed October;
+            November : Month renamed November;
+            December: Month renamed December;            
+
+        functions
+                isMonthNumber: nat1 -> bool;
+                monthToNat: Month -> nat1;
+                natToMonth: nat1 -> Month;
+                toString: Month -> seq of char;
+                daysInMonth: Month * nat1 -> nat1;
+                before: Month * Month -> bool;
+                priorMonth: Month -> Month;
+                nextMonth: Month -> Month;
+
+exports
+    functions 
+        testAll: () -> bool 
+
+definitions
+
+-- ----------------------------------------------------------------------------
+values
+-- ---------------------------------------------------------------------------- 
+
+monthList : seq of Month = [
+    January,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December
+];
+
+monthNames : seq of (seq of char) = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+];
+
+monthDays : seq of nat1 = [
+    31,
+    28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+];
+
+-- ----------------------------------------------------------------------------
+functions
+-- ---------------------------------------------------------------------------- 
+
+-- testIsMonthNumber checks the isMonthNmber function
+testIsMonthNumber: () -> bool 
+testIsMonthNumber() == 
+    let 
+        result1 = Month`isMonthNumber(1),
+        result2 = Month`isMonthNumber(12),
+        result3 = not Month`isMonthNumber(100),
+        result4 = not Month`isMonthNumber(13)
+    in 
+        result1 and result2 and result3 and result4;
+
+testMonthToNat: () -> bool 
+testMonthToNat() == 
+    iterateMonths(1, true);
+
+iterateMonths: nat1 * bool -> bool 
+iterateMonths(index, result) ==
+    let 
+        newResult = (Month`monthToNat(Month`natToMonth(index)) = index)
+    in 
+        if index = 12 then result and newResult 
+        else iterateMonths(index + 1, result and newResult)
+    measure is not yet specified;
+
+testToString: () -> bool 
+testToString() == 
+    iterateMonthStrings(1, true);
+
+iterateMonthStrings: nat1 * bool -> bool 
+iterateMonthStrings(index, result) == 
+    let 
+        month = monthList(index),
+        name = Month`toString(month),
+        newResult = (name = monthNames(index))
+    in 
+        if index = 12 then result and newResult 
+        else iterateMonthStrings(index + 1, result and newResult)
+    measure is not yet specified;
+
+testDaysInMonth: () -> bool 
+testDaysInMonth() == 
+    iterateDaysInMonth(1, true);
+
+iterateDaysInMonth: nat1 * bool -> bool
+iterateDaysInMonth(index, result) == 
+    let 
+        month = monthList(index),
+        days = Month`daysInMonth(month, 2021),
+        newResult = (days = monthDays(index))
+    in 
+        if index = 12 then result and newResult
+        else iterateDaysInMonth(index + 1, result and newResult)
+    measure is not yet specified;
+ 
+-- testAll invokes all the tests
+testAll: () -> bool 
+testAll() == 
+    let 
+        resultIsMonthNumber = testIsMonthNumber(),
+        resultMonthToNat = testMonthToNat(),
+        resultToString = testToString(),
+        resultDaysInMonth = testDaysInMonth()
+    in 
+        resultIsMonthNumber and resultMonthToNat and resultToString 
+        and resultDaysInMonth;
+
+end MonthTest

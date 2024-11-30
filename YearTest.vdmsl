@@ -48,8 +48,8 @@ testIsLeapYear() ==
     let 
         result1 = isLeapYear(2000),
         result2 = isLeapYear(1904),
-        result3 = isLeapYear(1900),
-        result4 = isLeapYear(1901)
+        result3 = not isLeapYear(1900),
+        result4 = not isLeapYear(1901)
     in 
         result1 and result2 and result3 and result4;
 
