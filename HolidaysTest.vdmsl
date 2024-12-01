@@ -37,14 +37,17 @@ imports
             create: Month * nat1 * nat1 -> Date,
 
    from Week
-        types
+         types
             DayOfWeek renamed DayOfWeek;
 
         values
-            daysOfWeek;
+            Sunday renamed Sunday;
+            Monday renamed Monday;
+            Thursday renamed Thursday;
+            Friday renamed Friday;
 
         functions
-            dayOfWeek: Date -> DayOfWeek, 
+            dayOfWeek: Date -> DayOfWeek,
 
     from Holidays
         types
@@ -89,11 +92,6 @@ definitions
 values
 -- ----------------------------------------------------------------------------
 
-sunday = Week`daysOfWeek(1);
-monday = Week`daysOfWeek(2);
-thursday = Week`daysOfWeek(5);
-friday = Week`daysOfWeek(6);
-
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
@@ -113,7 +111,7 @@ testOfNewYearsDay() ==
         Holidays`getActualDate(newYearsHoliday) = expNewYears and 
         Holidays`getObservedDate(newYearsHoliday) = expObservedDate and 
         Holidays`getName(newYearsHoliday) = "New Year's Day" and
-        Holidays`getObservedDayOfWeek(newYearsHoliday) = friday;
+        Holidays`getObservedDayOfWeek(newYearsHoliday) = Friday;
 
 -- testOfNewYearsDay1 checks the definition of New Year's Day for an observed
 -- date on the Monday after. 
@@ -130,7 +128,7 @@ testOfNewYearsDay1() ==
         Holidays`getActualDate(newYearsHoliday) = expNewYears and 
         Holidays`getObservedDate(newYearsHoliday) = expObservedDate and 
         Holidays`getName(newYearsHoliday) = "New Year's Day" and
-        Holidays`getObservedDayOfWeek(newYearsHoliday) = monday        
+        Holidays`getObservedDayOfWeek(newYearsHoliday) = Monday        
         ;     
 
 -- testOfNewYearsDay2 checks the definition of New Year's Day that 
@@ -148,42 +146,42 @@ testOfNewYearsDay2() ==
         Holidays`getActualDate(newYearsHoliday) = expNewYears and 
         Holidays`getObservedDate(newYearsHoliday) = expObservedDate and 
         Holidays`getName(newYearsHoliday) = "New Year's Day" and
-        Holidays`getObservedDayOfWeek(newYearsHoliday) = friday;  
+        Holidays`getObservedDayOfWeek(newYearsHoliday) = Friday;  
 
 -- testOf4thThursday checks the computation of the date of the 4th 
 -- Thursday of November.
 testOf4thThursday: () -> bool
 testOf4thThursday() == 
     let
-        date = Holidays`nthDayOfMonth(November, thursday, 4, 2021)
+        date = Holidays`nthDayOfMonth(November, Thursday, 4, 2021)
     in 
         Date`getDay(date) = 25 and 
         Date`getMonth(date) = November and
         Date`getYear(date) = 2021 and 
-        Week`dayOfWeek(date) = thursday;
+        Week`dayOfWeek(date) = Thursday;
 
 -- testOfFirstMonday checks the computation of the first day of
 -- the month.
 testOfFirstMonday: () -> bool 
 testOfFirstMonday() == 
     let 
-        date = Holidays`nthDayOfMonth(November, monday, 1, 2021)
+        date = Holidays`nthDayOfMonth(November, Monday, 1, 2021)
     in 
         Date`getDay(date) = 1 and 
         Date`getMonth(date) = November and
         Date`getYear(date) = 2021 and 
-        Week`dayOfWeek(date) = monday;
+        Week`dayOfWeek(date) = Monday;
 
 -- testOf3rdMonday checks the computation of the third monday 
 testOf3rdMonday: () -> bool
 testOf3rdMonday() == 
    let 
-        date = Holidays`nthDayOfMonth(November, monday, 3, 2021)
+        date = Holidays`nthDayOfMonth(November, Monday, 3, 2021)
     in 
         Date`getDay(date) = 15 and 
         Date`getMonth(date) = November and
         Date`getYear(date) = 2021 and 
-        Week`dayOfWeek(date) = monday;
+        Week`dayOfWeek(date) = Monday;
 
 -- testOfMartinLutherKingBirthday checks the computaition of this
 -- holiday.
@@ -292,13 +290,12 @@ testOfDayOfWeekAfter: () -> bool
 testOfDayOfWeekAfter() ==
     let 
         baseDate = Date`create(April, 9, 2023),
-        dateAfter = Holidays`dayOfWeekAfter(baseDate, sunday) 
+        dateAfter = Holidays`dayOfWeekAfter(baseDate, Sunday) 
     in 
         Date`getMonth(dateAfter) = April and 
         Date`getDay(dateAfter) = 16 and 
         Date`getYear(dateAfter) = 2023;
         
-
 -- Summary test
 
 -- testAll runs all the tests

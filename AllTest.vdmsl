@@ -19,11 +19,27 @@ imports
         functions 
             testAll: () -> bool,
 
+    from MonthYearTest 
+        functions 
+            testAll: () -> bool,
+
     from DateTest 
         functions 
             testAll: () -> bool,
 
     from DateRangeTest 
+        functions 
+            testAll: () -> bool,
+
+    from HolidaysTest 
+        functions 
+            testAll: () -> bool,
+
+    from AbsoluteDateTest 
+        functions 
+            testAll: () -> bool,
+
+    from WeekTest 
         functions 
             testAll: () -> bool;
 
@@ -43,9 +59,14 @@ runAllTests() ==
     let 
         yearTest = YearTest`testAll(),
         monthTest = MonthTest`testAll(),
+        monthYearTest = MonthYearTest`testAll(),
         dateTest = DateTest`testAll(),
-        dateRangeTest = DateRangeTest`testAll()
+        dateRangeTest = DateRangeTest`testAll(),
+        holidayTest = HolidaysTest`testAll(),
+        weekTest = WeekTest`testAll(),
+        absoluteTest = AbsoluteDateTest`testAll()
     in 
-        yearTest and monthTest and dateRangeTest and dateTest
+        yearTest and monthTest and dateRangeTest and dateTest and holidayTest and 
+        monthYearTest and weekTest and absoluteTest
 
 end AllTest

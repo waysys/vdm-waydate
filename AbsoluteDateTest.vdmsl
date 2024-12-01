@@ -1,0 +1,92 @@
+-- ----------------------------------------------------------------------------
+--
+-- AbsoluteDateTest - tests of the abolute date module
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 30 Nov 2023
+--
+-- This module tests the absolute date module.
+-- ----------------------------------------------------------------------------
+
+module AbsoluteDateTest 
+
+imports 
+    from Month 
+            types 
+                Month renamed Month 
+
+            values 
+                November renamed November,
+
+    from Date 
+        types
+            Date renamed Date;
+
+        values 
+            MaxDate renamed MaxDate;
+            MinDate renamed MinDate;
+
+        functions 
+            create: Month * nat1 * nat1 -> Date,
+
+    from AbsoluteDate 
+        types
+            AbsoluteDate renamed AbsoluteDate;
+
+        values
+            MaxAbsoluteDate : AbsoluteDate renamed MaxAbsoluteDate;
+            MinAbsoluteDate : AbsoluteDate renamed MinAbsoluteDate;
+
+        functions
+            convertToDate: AbsoluteDate -> Date`Date renamed convertToDate;
+            convertToAbsoluteDate: Date`Date -> AbsoluteDate renamed convertToAbsoluteDate;
+            natToAbsoluteDate: nat1 -> AbsoluteDate renamed natToAbsoluteDate;
+
+exports
+    functions 
+        testAll: () -> bool;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+values
+-- ---------------------------------------------------------------------------- 
+
+firstDate = Date`create(November, 30, 2024);
+absDate = natToAbsoluteDate(154832);
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+testConvertToDate: () -> bool 
+testConvertToDate() == 
+    let 
+        date1 = convertToDate(absDate),
+        date2 = convertToDate(MaxAbsoluteDate),
+        date3 = convertToDate(MinAbsoluteDate)
+    in 
+        date1 = firstDate and 
+        date2 = MaxDate and 
+        date3 = MinDate;
+
+testConvertDateToAbsoluteDate: () -> bool 
+testConvertDateToAbsoluteDate() == 
+    let 
+        absDate1 = convertToAbsoluteDate(firstDate),
+        absDate2 = convertToAbsoluteDate(MaxDate),
+        absDate3 = convertToAbsoluteDate(MinDate)
+    in 
+        absDate1 = absDate and 
+        absDate2 = MaxAbsoluteDate and 
+        absDate3 = MinAbsoluteDate;
+
+testAll: () -> bool 
+testAll() == 
+    let 
+        resultConvertToDate = testConvertToDate(),
+        resultConvertToAbsolute = testConvertDateToAbsoluteDate()
+    in 
+        resultConvertToDate and 
+        resultConvertToAbsolute;
+
+end AbsoluteDateTest

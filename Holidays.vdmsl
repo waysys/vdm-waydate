@@ -65,7 +65,10 @@ imports
             DayOfWeek renamed DayOfWeek;
 
         values
-            daysOfWeek;
+            Sunday renamed Sunday;
+            Monday renamed Monday;
+            Thursday renamed Thursday;
+            Saturday renamed Saturday;
 
         functions
             dayOfWeek: Date -> DayOfWeek; 
@@ -119,11 +122,6 @@ Holiday ::
 values
 -- ----------------------------------------------------------------------------
 
-sunday : DayOfWeek = Week`daysOfWeek(1);
-monday : DayOfWeek = Week`daysOfWeek(2);
-thursday : DayOfWeek = Week`daysOfWeek(5);
-saturday : DayOfWeek = Week`daysOfWeek(7);
-
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
@@ -148,7 +146,7 @@ martinLutherKingBirthday(year) ==
     let
         name = "Birthday of Martin Luther King, Jr."
     in
-        createFloatingHoliday(name, January, monday, 3, year)
+        createFloatingHoliday(name, January, Monday, 3, year)
 pre year >= 1900;   
 
 -- Washington's Birthday: floating holiday -- third Monday in
@@ -158,7 +156,7 @@ washingtonsBirthday(year) ==
    let
         name = "Washington's Birthday"
     in
-         createFloatingHoliday(name, February, monday, 3, year)
+         createFloatingHoliday(name, February, Monday, 3, year)
 pre year >= 1900;
 
  -- Memorial nat1: floating holiday -- last Monday in May.
@@ -166,7 +164,7 @@ pre year >= 1900;
  memorialDay(year) ==
     let 
         name = "Memorial Day",
-        actualDate = lastWeekDayOfMonth(May , year, monday),
+        actualDate = lastWeekDayOfMonth(May , year, Monday),
         observeDate = actualDate,
         observedDayOfWeek = Week`dayOfWeek(observeDate)
     in
@@ -199,7 +197,7 @@ laborDay(year)  ==
     let 
         name = "Labor Day"
     in
-        createFloatingHoliday(name, September, monday, 1, year)
+        createFloatingHoliday(name, September, Monday, 1, year)
 pre year >= 1900;
 
 -- Columbus Day: floating holiday - second Monday in October
@@ -208,7 +206,7 @@ columbusDay(year) ==
     let 
         name = "Columbus Day"
     in
-        createFloatingHoliday(name, October, monday, 2, year)
+        createFloatingHoliday(name, October, Monday, 2, year)
 pre year >= 1900;   
 
 -- Veteran's Day: fixed holiday - November 11
@@ -227,7 +225,7 @@ thanksgiving(year) ==
     let 
         name = "Thanksgiving Day"
     in 
-        createFloatingHoliday(name, November, thursday, 4, year)
+        createFloatingHoliday(name, November, Thursday, 4, year)
 pre year >= 1900; 
 
 -- Christmas Day: fixed holiday - December 25
@@ -256,9 +254,9 @@ christmas(year) ==
             then shiftedEpact + 1
             else shiftedEpact,
         paschalMoon = Date`addDay(Date`create(April, nineteen, year), -adjustedEpact),
-        easterSunday = dayOfWeekAfter(paschalMoon, sunday) 
+        easterSunday = dayOfWeekAfter(paschalMoon, Sunday) 
     in  
-        mk_Holiday("Easter", easterSunday, easterSunday, sunday)
+        mk_Holiday("Easter", easterSunday, easterSunday, Sunday)
  pre year >= 1900;
 
 -- Properties -----------------------------------------------------------------
@@ -317,8 +315,8 @@ pre year >= 1900;
 observedDate: Date -> Date
 observedDate(date) ==
     cases Week`dayOfWeek(date):
-        (saturday) -> Date`decrement(date),
-        (sunday) -> Date`increment(date),
+        (Saturday) -> Date`decrement(date),
+        (Sunday) -> Date`increment(date),
         others -> date
     end;
 

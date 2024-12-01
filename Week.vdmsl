@@ -30,8 +30,13 @@ imports
             DayOfWeek;
 
         values
-            weekDayNumber: map DayOfWeek to nat;
-            daysOfWeek: seq of DayOfWeek;
+            Sunday: DayOfWeek;
+            Monday: DayOfWeek;
+            Tuesday: DayOfWeek;
+            Wednesday: DayOfWeek;
+            Thursday: DayOfWeek;
+            Friday: DayOfWeek;
+            Saturday: DayOfWeek;
 
         functions
             dayOfWeek: Date -> DayOfWeek; 
@@ -76,6 +81,14 @@ weekDayNumber : map DayOfWeek to nat = {
     <Friday>    |-> 5,
     <Saturday>  |-> 6
 };
+
+Sunday : DayOfWeek = <Sunday>;
+Monday : DayOfWeek = <Monday>;
+Tuesday : DayOfWeek = <Tuesday>;
+Wednesday : DayOfWeek = <Wednesday>;
+Thursday : DayOfWeek = <Thursday>;
+Friday : DayOfWeek = <Friday>;
+Saturday : DayOfWeek = <Saturday>;
 
 -- ----------------------------------------------------------------------------
 functions

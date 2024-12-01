@@ -88,7 +88,8 @@ convertToAbsoluteDate(date) ==
 -- This function is needed in other modules that import this module.
 natToAbsoluteDate: nat1 -> AbsoluteDate
 natToAbsoluteDate(value) ==
-    value;
+    value 
+pre value >= 1 and value < MaxAbsoluteDate;
 
 -- absoluteDateToNat returns the natural number corresponding to the absolute date.
 -- The function is needed in client modules that do calculations with absolute dates.

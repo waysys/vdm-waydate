@@ -54,7 +54,7 @@ exports
         increment: MonthYear -> MonthYear;
         decrement: MonthYear -> MonthYear;
         create: Month * nat1 -> MonthYear
-        createFromMonths: nat1 -> MonthYear;
+        createFromMonths: nat -> MonthYear;
         daysInMonthYear: MonthYear -> int;
         equals: MonthYear * MonthYear -> bool;
         getMonth: MonthYear -> Month;
@@ -113,7 +113,7 @@ pre isYear(year)
 post isMonthYear(RESULT);
 
 -- createFromMonths converts completed months to the equivalent month and year. 
-createFromMonths: nat1 -> MonthYear
+createFromMonths: nat -> MonthYear
 createFromMonths(months) ==
     let
         year = months div 12 + MinYear,

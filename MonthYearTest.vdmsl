@@ -4,10 +4,10 @@
 -- Author: William Shaffer (wshaffer@waysysweb.com)
 -- Date:   20 Aug 2024
 --
--- This module performs calculations related to months.
+-- This module performs calculations related to months-years.
 -- ----------------------------------------------------------------------------
 
-module MonthsTest
+module MonthYearTest
 
 imports 
    from Year 
@@ -141,4 +141,4 @@ testAll() ==
         sumIncrement and 
         sumAdd;
 
-end MonthsTest
+end MonthYearTest 

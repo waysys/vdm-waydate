@@ -10,9 +10,43 @@
 module WeekTest
 
 imports 
-    from Week
+    from Month 
         types 
+            Month renamed Month 
+
+        values 
+            November renamed November,
+
+    from Date 
+        types
+            Date renamed Date;
+
+        values 
+            MinDate renamed MinDate;
+        
+        functions 
+            create: Month * nat1 * nat1 -> Date,
+
+    from Week
+         types
             DayOfWeek renamed DayOfWeek;
+
+        values
+            Sunday: DayOfWeek renamed Sunday;
+            Monday: DayOfWeek renamed Monday;
+            Tuesday: DayOfWeek renamed Tuesday;
+            Wednesday: DayOfWeek renamed Wednesday;
+            Thursday: DayOfWeek renamed Thursday;
+            Friday: DayOfWeek renamed Friday;
+            Saturday: DayOfWeek renamed Saturday;
+
+        functions
+            dayOfWeek: Date -> DayOfWeek renamed dayOfWeek; 
+            weekDay: nat -> DayOfWeek renamed weekDay;
+
+exports
+    functions 
+        testAll: () -> bool;
 
 definitions
 
@@ -20,10 +54,50 @@ definitions
 values
 -------------------------------------------------------------------------------
 
+saturdayDate = Date`create(November, 30, 2024);
+thursdayDate = Date`create(November, 30, 2023);
+
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
 
 -- Tests 
+dayOfWeekTest: () -> bool 
+dayOfWeekTest() == 
+    let 
+        monday = dayOfWeek(MinDate),
+        thursday = dayOfWeek(thursdayDate),
+        saturday = dayOfWeek(saturdayDate)
+    in 
+        monday = Monday and 
+        thursday = Thursday and 
+        saturday = Saturday;
+
+weekDayTest: () -> bool 
+weekDayTest() == 
+    let 
+        sunday = weekDay(0),
+        monday = weekDay(1),
+        tuesday = weekDay(2),
+        wednesday = weekDay(3),
+        thursday = weekDay(4),
+        friday = weekDay(5),
+        saturday = weekDay(6)
+    in 
+        sunday = Sunday and 
+        monday = Monday and 
+        tuesday = Tuesday and 
+        wednesday = Wednesday and 
+        thursday = Thursday and 
+        friday = Friday and 
+        saturday = Saturday;
+
+testAll: () -> bool 
+testAll() == 
+    let 
+        resultWeekDay = weekDayTest(),
+        resultDayOfWeek = dayOfWeekTest()
+    in 
+        resultWeekDay and resultDayOfWeek;
 
 end WeekTest
