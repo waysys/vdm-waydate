@@ -1,0 +1,70 @@
+-- ----------------------------------------------------------------------------
+--
+-- DayOfYearTest - a module to facilitate tests of DayOfYear
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date: 26 Dec 2024
+--
+-- This module helps test the combination of AbsoluteDate and Date
+-- ----------------------------------------------------------------------------
+
+module DayOfYearTest 
+
+imports
+
+    from Month 
+        values 
+            October renamed October,
+
+   from DayOfYear 
+        types 
+            DayOfYear renamed DayOfYear;
+            MonthDay renamed MonthDay;
+
+        functions
+            dayOfYearToMonthDay: DayOfYear * nat1 -> MonthDay renamed dayOfYearToMonthDay; 
+            natToDayOfYear: nat1 -> DayOfYear renamed natToDayOfYear; 
+            isDayOfYear: nat1 * nat1 -> bool renamed isDayOfYear
+
+exports 
+    functions
+        testAll: () -> bool;
+
+definitions
+
+-- ----------------------------------------------------------------------------
+functions
+-------------------------------------------------------------------------------
+
+-- testIsDayOfYear returns true if the tests of isDayOfYear all pass.
+testIsDayOfYear: () -> bool 
+testIsDayOfYear() == 
+    let 
+        resultOne = isDayOfYear(1, 2024),
+        resultLeapYear = isDayOfYear(366, 2024),
+        resultNonLeapYear = not isDayOfYear(366, 2023),
+        resultRegularYear = isDayOfYear(365, 2023)
+    in 
+        resultOne and resultLeapYear and resultNonLeapYear and resultRegularYear; 
+
+-- testDayOfYearToMonthDay tests the dayOfYearToMonthDay 
+testDayOfYearToMonthDay: () -> bool 
+testDayOfYearToMonthDay() == 
+    let 
+        dayOfYear = natToDayOfYear(304),
+        monthDay = dayOfYearToMonthDay(dayOfYear, 2022)
+    in 
+        monthDay.month = October and monthDay.day = 31;
+
+
+
+-- testAll executes all of the tests for day of year. 
+testAll: () -> bool 
+testAll() == 
+    let 
+        resultOne = testIsDayOfYear(),
+        resultTwo = testDayOfYearToMonthDay()
+    in 
+        resultOne and resultTwo;
+
+
+end DayOfYearTest

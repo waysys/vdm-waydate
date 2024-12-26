@@ -41,7 +41,11 @@ imports
 
     from WeekTest 
         functions 
-            testAll: () -> bool;
+            testAll: () -> bool,
+
+    from DayOfYearTest 
+        functions 
+            testAll: () -> bool
 
 exports 
     functions 
@@ -64,9 +68,10 @@ runAllTests() ==
         dateRangeTest = DateRangeTest`testAll(),
         holidayTest = HolidaysTest`testAll(),
         weekTest = WeekTest`testAll(),
-        absoluteTest = AbsoluteDateTest`testAll()
+        absoluteTest = AbsoluteDateTest`testAll(),
+        dayOfYearTest = DayOfYearTest`testAll()
     in 
         yearTest and monthTest and dateRangeTest and dateTest and holidayTest and 
-        monthYearTest and weekTest and absoluteTest
+        monthYearTest and weekTest and absoluteTest and dayOfYearTest 
 
 end AllTest

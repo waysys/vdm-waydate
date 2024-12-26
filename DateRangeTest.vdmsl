@@ -37,7 +37,8 @@ imports
             create: Date * Date -> DateRange;
             inRange: DateRange * Date -> bool; 
             overlaps: DateRange * DateRange -> bool;
-            size: DateRange -> nat;
+            toSet: DateRange -> set of Date renamed toSet;
+            size: DateRange -> nat renamed size;
 
 exports
     functions
@@ -98,17 +99,27 @@ testOverlap() ==
 testSize: () -> bool
 testSize() ==
     let
-        size = DateRange`size(range1)
+        sze = size(range1)
     in 
-        size = 488;
+        sze = 488;
+
+-- Test of toSet 
+testToSet: () -> bool 
+testToSet() == 
+    let 
+        aSet = toSet(range1),
+        sze = size(range1)
+    in 
+        (card aSet) = sze;
 
 testAll: () -> bool 
 testAll() == 
     let 
         resultDateRange = testDateRange(),
         resultOverlap = testOverlap(),
-        resultSize = testSize()
+        resultSize = testSize(),
+        resultToSet = testToSet()
     in 
-        resultDateRange and resultOverlap and resultSize;
+        resultDateRange and resultOverlap and resultSize and resultToSet;
 
 end DateRangeTest

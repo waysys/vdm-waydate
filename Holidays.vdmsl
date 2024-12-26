@@ -46,9 +46,7 @@ imports
             decrement: Date -> Date;
             before: Date * Date -> bool;
             after: Date * Date -> bool renamed after;
-
-        operations  
-            addDay : Date * int ==> Date,
+            addDay : Date * int -> Date,
 
     from DateRange
         types
@@ -56,10 +54,8 @@ imports
 
         functions
             create: Date * Date -> DateRange;
-
-        operations
-            toSet: DateRange ==> set of Date renamed toSet,           
-
+            toSet: DateRange -> set of Date renamed toSet,    
+         
     from Week
         types
             DayOfWeek renamed DayOfWeek;

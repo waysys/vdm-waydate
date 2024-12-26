@@ -26,7 +26,9 @@ imports
             MinDate renamed MinDate;
 
         functions 
-            create: Month * nat1 * nat1 -> Date,
+            create: Month * nat1 * nat1 -> Date;
+            createFromAbsoluteDate: AbsoluteDate -> Date renamed createFromAbsoluteDate;
+            convertToAbsoluteDate: Date`Date -> AbsoluteDate renamed convertToAbsoluteDate,
 
     from AbsoluteDate 
         types
@@ -37,8 +39,6 @@ imports
             MinAbsoluteDate : AbsoluteDate renamed MinAbsoluteDate;
 
         functions
-            convertToDate: AbsoluteDate -> Date`Date renamed convertToDate;
-            convertToAbsoluteDate: Date`Date -> AbsoluteDate renamed convertToAbsoluteDate;
             natToAbsoluteDate: nat1 -> AbsoluteDate renamed natToAbsoluteDate;
 
 exports
@@ -61,9 +61,9 @@ functions
 testConvertToDate: () -> bool 
 testConvertToDate() == 
     let 
-        date1 = convertToDate(absDate),
-        date2 = convertToDate(MaxAbsoluteDate),
-        date3 = convertToDate(MinAbsoluteDate)
+        date1 = createFromAbsoluteDate(absDate),
+        date2 = createFromAbsoluteDate(MaxAbsoluteDate),
+        date3 = createFromAbsoluteDate(MinAbsoluteDate)
     in 
         date1 = firstDate and 
         date2 = MaxDate and 

@@ -31,9 +31,7 @@ exports
         inRange: DateRange * Date -> bool; 
         overlaps: DateRange * DateRange -> bool;   
         size: DateRange -> nat1;
-
-    operations
-        toSet: DateRange ==> set of Date
+        toSet: DateRange -> set of Date 
 
 definitions
 
@@ -79,21 +77,21 @@ size: DateRange -> nat1
 size(range) ==
     Date`difference(range.last, range.first) + 1;
 
--- ----------------------------------------------------------------------------
-operations 
--- ----------------------------------------------------------------------------
-
--- toSet converts the date range to a set of dates.
-pure toSet: DateRange ==> set of Date 
+-- toSet converts the date range to a set of dates
+toSet: DateRange -> set of Date 
 toSet(dateRange) == 
-    ( dcl date : Date := dateRange.first,
-          aSet : set of Date := {};
-      while inRange(dateRange, date) do (
-        aSet := aSet union {date};
-        date := increment(date);
-      );
-      return aSet;
-    )
-    
+    fillSet({}, dateRange.first, dateRange.last);
+
+-- fillSet fills the set with dates in a date range. 
+fillSet: (set of Date) * Date * Date -> set of Date 
+fillSet(aSet, currentDate, endDate) == 
+    if currentDate = endDate then aSet union {currentDate}
+    else 
+        let 
+            newSet = aSet union {currentDate},
+            nextDate = increment(currentDate)
+        in 
+            fillSet(newSet, nextDate, endDate)
+measure is not yet specified
 
 end DateRange

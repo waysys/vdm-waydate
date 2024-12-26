@@ -14,16 +14,7 @@ module AbsoluteDate
 imports 
     from Year 
         values 
-            MinYear : nat1 renamed MinYear, 
-
-    from Date 
-        types
-            Date renamed Date;
-
-        functions
-            createFromDayOfYear: nat1 * nat1 -> Date;
-            dayOfYear: Date -> nat1;
-            getYear: Date -> nat1 renamed getYear;
+            MinYear : nat1 renamed MinYear; 
 
 exports 
     types
@@ -34,9 +25,8 @@ exports
         MinAbsoluteDate : AbsoluteDate;
 
     functions
-        -- conversions
-        convertToDate: AbsoluteDate -> Date`Date;
-        convertToAbsoluteDate: Date`Date -> AbsoluteDate;
+        yearFromAbsolute: AbsoluteDate -> nat;
+        daysInPastYears: nat1 -> nat
         natToAbsoluteDate: nat1 -> AbsoluteDate;
         absoluteDateToNat: AbsoluteDate -> nat1;
 
@@ -65,31 +55,12 @@ DaysIn1YearCycle   = 365;
 functions
 -- ----------------------------------------------------------------------------
 
--- convertFromDate returns a date corresponding to the specified
--- absolute date
-convertToDate: AbsoluteDate -> Date
-convertToDate(absoluteDate) ==
-    let
-        year  = yearFromAbsolute(absoluteDate),
-        dayYear = absoluteDate - daysInPastYears(year)
-    in 
-        Date`createFromDayOfYear(dayYear, year);
-
--- convertToAbsoluteDate returns an absolute date corresponding to the specified
--- date.
-convertToAbsoluteDate: Date`Date -> AbsoluteDate
-convertToAbsoluteDate(date) ==
-    let
-        dayYear = Date`dayOfYear(date)
-    in
-        dayYear + daysInPastYears(getYear(date));
-
 -- natToAbsoluteDate returns an absolute date confirming to the specified natural number.
 -- This function is needed in other modules that import this module.
 natToAbsoluteDate: nat1 -> AbsoluteDate
 natToAbsoluteDate(value) ==
     value 
-pre value >= 1 and value < MaxAbsoluteDate;
+pre value >= 1 and value <= MaxAbsoluteDate;
 
 -- absoluteDateToNat returns the natural number corresponding to the absolute date.
 -- The function is needed in client modules that do calculations with absolute dates.

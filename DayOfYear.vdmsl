@@ -1,0 +1,111 @@
+-- ----------------------------------------------------------------------------
+--
+-- DayOfYear - calculations involving day of year
+-- Author: William Shaffer (wshaffer@waysysweb.com)
+-- Date:   26 December 2024
+--
+-- This module defines characteristics of the day of year.
+-- Copyright (c) 2024 William Shaffer
+-- ----------------------------------------------------------------------------
+
+module DayOfYear 
+
+imports 
+    from Year 
+        functions 
+            isYear: nat1 -> bool renamed isYear;
+            daysInYear: nat1 -> nat1 renamed daysInYear,
+
+    from Month 
+        types 
+            Month renamed Month
+
+        functions 
+            daysInMonth: Month * nat1 -> nat1 renamed daysInMonth;
+            isMonthNumber: int -> bool renamed isMonthNumber;
+            natToMonth: nat1 -> Month renamed natToMonth;
+            monthToNat: Month -> nat1 renamed monthToNat;
+
+exports
+    types
+        DayOfYear 
+        struct MonthDay
+
+    functions 
+        isDayOfYear: nat1 * nat1 -> bool;
+        dayOfYearToMonthDay: DayOfYear * nat1 -> MonthDay;
+        natToDayOfYear: nat1 -> DayOfYear; 
+        dayOfYearToNat: DayOfYear -> nat1
+
+definitions
+
+-- ----------------------------------------------------------------------------
+types
+-- ----------------------------------------------------------------------------
+
+DayOfYear = nat1 
+inv dayOfYear ==  dayOfYear >= 1 and dayOfYear <= 366;
+
+MonthDay :: month : Month
+            day : nat1
+inv mk_MonthDay(month, day) == day >= 1 and day <= MaxDay and isMonthNumber(monthToNat(month))
+            
+-- ----------------------------------------------------------------------------
+values
+-- ----------------------------------------------------------------------------
+
+MaxDay = 31
+
+-- ----------------------------------------------------------------------------
+functions
+-- ----------------------------------------------------------------------------
+
+-- isDayOfYear returns true if dayOfYear is a valid day of year given the specified
+-- year.
+isDayOfYear: nat1 * nat1 -> bool
+isDayOfYear(dayYear, year) ==
+    if dayYear < 1 then false
+    else if dayYear > daysInYear(year) then false
+    else true
+pre isYear(year);
+
+-- dayOfYearToNat returns the day of year as a nat1 number
+dayOfYearToNat: DayOfYear -> nat1 
+dayOfYearToNat(dayOfYear) == 
+    dayOfYear;
+
+-- natToDayOfYear returns the nat1 number as the day of year
+natToDayOfYear: nat1 -> DayOfYear 
+natToDayOfYear(value) == 
+    value;
+
+-- createMonthDay creates the month day record
+createMonthDay: nat1 * nat1 * nat1 -> MonthDay 
+createMonthDay(monthNumber, day, year) == 
+    let 
+        month = natToMonth(monthNumber)
+    in
+        mk_MonthDay(month, day)
+pre isMonthNumber(monthNumber) and day >=1 and day <= daysInMonth(natToMonth(monthNumber), year);
+
+-- dayOfYearToMonthDay converts a day of year to a tuple with a month and day.
+dayOfYearToMonthDay: DayOfYear * nat1 -> MonthDay 
+dayOfYearToMonthDay(dayOfYear, year) == 
+    let 
+        monthDay = calcMonthDay(dayOfYear, 1, year)
+    in 
+        createMonthDay(monthDay.#1, monthDay.#2, year);
+
+-- calcMonthDay accepts a day of year and converts it to a month number and day 
+calcMonthDay: nat1 * nat1 * nat1 -> nat1 * nat1 
+calcMonthDay(dayOfYear, monthNumber, year) == 
+    if dayOfYear <= daysInMonth(natToMonth(monthNumber), year) then mk_(monthNumber, dayOfYear)
+    else 
+        let 
+            remainingDays = dayOfYear - daysInMonth(natToMonth(monthNumber), year)
+        in 
+            calcMonthDay(remainingDays, monthNumber + 1, year)
+pre isMonthNumber(monthNumber) and isYear(year) and isDayOfYear(dayOfYear, year)
+measure is not yet specified;
+
+end DayOfYear

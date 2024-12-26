@@ -22,13 +22,21 @@ imports
             November : Month renamed November;
             December: Month renamed December,
 
+    from DayOfYear
+        types 
+            DayOfYear renamed DayOfYear;
+
+        functions
+            natToDayOfYear: nat1 -> DayOfYear renamed natToDayOfYear,
+
     from Date 
         types
             Date  renamed Date;
 
         functions
-            createFromDayOfYear: nat1 * nat1 -> Date;
+            createFromDayOfYear: DayOfYear * nat1 -> Date;
             create: Month * nat1 * nat1 -> Date;
+            createFromAbsoluteDate: AbsoluteDate -> Date;
             dayOfYear: Date -> nat1;
             maxDate: Date * Date -> Date;
             minDate: Date * Date -> Date;
@@ -37,14 +45,13 @@ imports
             equals: Date * Date -> bool;
             increment: Date -> Date renamed increment;
             decrement: Date -> Date renamed decrement;
+            convertToAbsoluteDate: Date -> AbsoluteDate;
+            addDay: Date * int -> Date;
 
         values
             MinDate;
-            MaxDate;
+            MaxDate,
  
-        operations
-            addDay: Date * int ==> Date,
-
     from AbsoluteDate
         types
             AbsoluteDate renamed AbsoluteDate;
@@ -55,8 +62,6 @@ imports
 
         functions
             -- conversions
-            convertToDate: AbsoluteDate -> Date`Date;
-            convertToAbsoluteDate: Date`Date -> AbsoluteDate
             natToAbsoluteDate: nat1 -> AbsoluteDate,
 
     from Week 
@@ -95,7 +100,7 @@ testDayOfYear() ==
         startDate = Date`create(October, 31, 2022),
         dayOfYear = Date`dayOfYear(startDate)
     in
-        startDate = Date`createFromDayOfYear(dayOfYear, 2022);
+        startDate = Date`createFromDayOfYear(natToDayOfYear(dayOfYear), 2022);
 
 -- Tests of absolute date conversion
 
@@ -106,7 +111,7 @@ testConvertToDate() ==
         absoluteDate : AbsoluteDate = AbsoluteDate`natToAbsoluteDate(20),
         expectedDate = Date`create(January, 20, 1601)
     in
-        AbsoluteDate`convertToDate(absoluteDate) = expectedDate;
+        Date`createFromAbsoluteDate(absoluteDate) = expectedDate;
 
 -- Test certain facts about absolute date:
 --    absolute date of 1-Jan-1601 = 1
@@ -114,8 +119,8 @@ testConvertToDate() ==
 testConvertToAbsoluteDate: () -> bool
 testConvertToAbsoluteDate() ==
     let
-        maxAbsoluteDate = AbsoluteDate`convertToAbsoluteDate(Date`MaxDate),
-        minAbsoluteDate = AbsoluteDate`convertToAbsoluteDate(Date`MinDate)
+        maxAbsoluteDate = Date`convertToAbsoluteDate(Date`MaxDate),
+        minAbsoluteDate = Date`convertToAbsoluteDate(Date`MinDate)
     in
         (minAbsoluteDate = AbsoluteDate`MinAbsoluteDate) and (maxAbsoluteDate = AbsoluteDate`MaxAbsoluteDate);
 
@@ -125,8 +130,8 @@ testConvertToAbsoluteDate() ==
 testConvertFromAbsoluteDate: () -> bool
 testConvertFromAbsoluteDate() ==
     let
-        date1 = AbsoluteDate`convertToDate(AbsoluteDate`MinAbsoluteDate),
-        date2 = AbsoluteDate`convertToDate(AbsoluteDate`MaxAbsoluteDate)
+        date1 = Date`createFromAbsoluteDate(AbsoluteDate`MinAbsoluteDate),
+        date2 = Date`createFromAbsoluteDate(AbsoluteDate`MaxAbsoluteDate)
     in
         (date1 = Date`MinDate) and (date2 = Date`MaxDate);
 

@@ -14,7 +14,10 @@ module Week
 imports 
     from Date 
         types
-            Date renamed Date,
+            Date renamed Date;
+
+        functions
+            convertToAbsoluteDate: Date -> AbsoluteDate,
 
     from AbsoluteDate
         types
@@ -22,7 +25,6 @@ imports
 
         functions
             -- conversions
-            convertToAbsoluteDate: Date -> AbsoluteDate;
             absoluteDateToNat: AbsoluteDate -> nat1;
 
     exports
@@ -41,6 +43,7 @@ imports
         functions
             dayOfWeek: Date -> DayOfWeek; 
             weekDay: nat -> DayOfWeek;
+            dayOfWeekToWeekDayNumber: DayOfWeek -> nat;
 
 definitions
 
@@ -105,10 +108,14 @@ pre dayNum >= 0 and dayNum < 7;
 dayOfWeek: Date -> DayOfWeek 
 dayOfWeek(date) ==
     let
-        absoluteDate = AbsoluteDate`convertToAbsoluteDate(date),
+        absoluteDate = Date`convertToAbsoluteDate(date),
         index = AbsoluteDate`absoluteDateToNat(absoluteDate) mod 7
     in
-        weekDay(index)
+        weekDay(index);
 
+-- dayOfWeekToWeekDayNumber returns the numerical week day number
+dayOfWeekToWeekDayNumber: DayOfWeek -> nat 
+dayOfWeekToWeekDayNumber(dayOfWk) == 
+    weekDayNumber(dayOfWk)
 
 end Week
