@@ -41,10 +41,8 @@ imports
             create: Month * nat1 -> MonthYear renamed create;
             createFromMonths: int -> MonthYear renamed createFromMonths;
             equals: MonthYear * MonthYear -> bool renamed equals;
-
-        operations
-            addMonth: MonthYear * int ==> MonthYear renamed addMonth;                        
-                    
+            addMonth: MonthYear * int -> MonthYear renamed addMonth;
+                                          
 exports
     functions
         testAll: () -> bool;

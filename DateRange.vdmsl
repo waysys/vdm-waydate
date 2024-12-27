@@ -18,10 +18,8 @@ imports
                 before: Date * Date -> bool;
                 after:  Date * Date -> bool;
                 increment: Date -> Date renamed increment;
+                difference : Date * Date -> int;
 
-            operations
-                difference : Date * Date ==> int;
- 
 exports
     types
         struct DateRange;

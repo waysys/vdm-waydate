@@ -12,12 +12,12 @@
             "defaultName": "DateTest"
         },
         {
-            "name": "Lens config: Launch DateRangeTest`testAll",
+            "name": "Lens config: Launch AllTest`runAllTests",
             "type": "vdm",
             "request": "launch",
             "noDebug": true,
-            "defaultName": "DateRangeTest",
-            "command": "p testAll()"
+            "defaultName": "AllTest",
+            "command": "p runAllTests()"
         }
     ]
 }

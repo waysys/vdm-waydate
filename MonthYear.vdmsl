@@ -59,10 +59,8 @@ exports
         equals: MonthYear * MonthYear -> bool;
         getMonth: MonthYear -> Month;
         getYear: MonthYear -> nat1;
-        legalDay: MonthYear * nat1 -> nat1
-
-    operations
-        addMonth: MonthYear * int ==> MonthYear;
+        addMonth: MonthYear * int -> MonthYear;
+        legalDay: MonthYear * nat1 -> nat1;
 
 definitions
 
@@ -137,6 +135,17 @@ getYear: MonthYear -> nat1
 getYear(monthYear) == monthYear.year;
 
 -- ----------------------------------------------------------------------------
+-- Comparisons
+-- ----------------------------------------------------------------------------
+
+-- equals returns true if the two month years have the same 
+-- month and year. 
+equals: MonthYear * MonthYear -> bool 
+equals(monthYear1, monthYear2) == 
+    monthYear1.month = monthYear2.month and monthYear1.year = monthYear2.year;
+
+
+-- ----------------------------------------------------------------------------
 -- calculations
 -- ----------------------------------------------------------------------------
 
@@ -155,12 +164,6 @@ daysInMonthYear: MonthYear -> int
 daysInMonthYear(monthYear) ==
     daysInMonth(monthYear.month, monthYear.year);
 
--- equals returns true if the two month years have the same 
--- month and year. 
-equals: MonthYear * MonthYear -> bool 
-equals(monthYear1, monthYear2) == 
-    monthYear1.month = monthYear2.month and monthYear1.year = monthYear2.year;
-
 -- increment increases the month year by one month
 increment: MonthYear -> MonthYear
 increment(monthYear) == 
@@ -177,6 +180,16 @@ decrement(monthYear) ==
 pre not equals(MinMonthYear, monthYear) 
 post completedMonths(RESULT) = completedMonths(monthYear) - 1;
 
+-- addMonth adds a count to the month year.  If the count is negative, the count
+-- is subtracted from the month year.
+addMonth: MonthYear * int -> MonthYear 
+addMonth(monthYear, count) == 
+    if count > 0 then addMonth(increment(monthYear), count - 1)
+    else if count < 0 then addMonth(decrement(monthYear), count + 1) 
+    else monthYear
+pre 0 <= completedMonths(monthYear) + count and  completedMonths(monthYear) + count <= MaxCompletedMonths
+measure is not yet specified;
+ 
 -- legalDay returns a valid day given a proposed day and the associated month and year.
 -- If the proposed day is larger than the last day of the month, the last day of the
 -- month is returned.  Otherwise, the proposed day is returned. (Definitional)
@@ -189,28 +202,5 @@ legalDay(monthYear, proposedDay) ==
         else proposedDay 
 pre isMonthYear(monthYear) and 0 < proposedDay and proposedDay <= 31
 post isDay(getMonth(monthYear), RESULT, getYear(monthYear));
-
--- ----------------------------------------------------------------------------
-operations
--- ----------------------------------------------------------------------------
-
--- addMonth adds a count to the month year.  If the count is negative, the count
--- is subtracted from the month year.
-pure addMonth: MonthYear * int ==> MonthYear
-addMonth(monthYear, count) == 
-    ( dcl result : MonthYear := monthYear,
-          index : int := count;
-      while index > 0 do (
-        result := increment(result);
-        index := index - 1;
-      );
-      while index < 0 do (
-        result := decrement(result);
-        index := index + 1;
-      );
-      return result;  
-    )
-pre 0 <= completedMonths(monthYear) + count and  completedMonths(monthYear) + count <= MaxCompletedMonths
-post completedMonths(monthYear) + count = completedMonths(RESULT);
 
 end MonthYear
