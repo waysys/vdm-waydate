@@ -94,13 +94,57 @@ functions
 
 -- Test of day of year calculations
 
-testDayOfYear: () -> bool
-testDayOfYear() ==
+testDayOfYear: () -> bool 
+testDayOfYear() == 
+    let 
+        testBase = testDayOfYearBase(),
+        testFirstDay = testDayOfYearFirstDay(),
+        testLastDayMonth = testDayOfYearLastDayMonth(),
+        testEndFebNonLeapYear = testDayOfYearEndFebNonLeapYear(),
+        testEndFebLeapYear = testDayOfYearEndFebLeapYear()
+    in 
+        testBase and testFirstDay and testLastDayMonth and testEndFebNonLeapYear and 
+        testEndFebLeapYear; 
+
+testDayOfYearBase: () -> bool
+testDayOfYearBase() ==
     let
         startDate = Date`create(October, 31, 2022),
         dayOfYear = Date`dayOfYear(startDate)
     in
         startDate = Date`createFromDayOfYear(natToDayOfYear(dayOfYear), 2022);
+
+testDayOfYearFirstDay: () -> bool 
+testDayOfYearFirstDay() == 
+    let
+        startDate = Date`create(January, 1, 2022),
+        dayOfYear = Date`dayOfYear(startDate)
+    in
+        dayOfYear = 1;
+
+testDayOfYearLastDayMonth: () -> bool 
+testDayOfYearLastDayMonth() == 
+    let 
+        startDate = Date`create(January, 31, 2022),
+        dayOfYear = Date`dayOfYear(startDate)
+    in
+        dayOfYear = 31;    
+
+testDayOfYearEndFebNonLeapYear: () -> bool 
+testDayOfYearEndFebNonLeapYear() == 
+    let 
+        startDate = Date`create(February, 28, 2022),
+        dayOfYear = Date`dayOfYear(startDate)
+    in
+        dayOfYear = 59;        
+
+testDayOfYearEndFebLeapYear: () -> bool 
+testDayOfYearEndFebLeapYear() == 
+    let 
+        startDate = Date`create(February, 29, 2024),
+        dayOfYear = Date`dayOfYear(startDate)
+    in
+        dayOfYear = 60;        
 
 -- Tests of absolute date conversion
 

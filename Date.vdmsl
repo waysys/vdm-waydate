@@ -156,7 +156,7 @@ isValidDate(month, day, year) ==
 -- Data providers 
 -- ----------------------------------------------------------------------------
 
--- dayOfYear comoputes the day of the year for the specified date.  1-Jan-YYYY is day 1.
+-- dayOfYear comoputes the day of the year for the specified date.  1-Jan-YYYY is day 1.  
 -- (Definitional)
 dayOfYear: Date -> nat1
 dayOfYear(date) ==
@@ -171,9 +171,10 @@ dayOfYear(date) ==
 
 -- daysInMonths computes total days in all the months up to and including
 -- the specified months.
-daysInMonths: Month * Month * nat1 * nat1 -> nat1 
+daysInMonths: Month * Month * nat1 * nat -> nat
 daysInMonths(currentMonth, finalMonth, year, initialDays) == 
-    if currentMonth = finalMonth then initialDays + daysInMonth(currentMonth, year)
+    if currentMonth = finalMonth then initialDays 
+
     else 
         let 
             days = initialDays + daysInMonth(currentMonth, year),
@@ -284,7 +285,7 @@ addDay(date, count) ==
         result = absDate + count
     in 
         if result < absoluteDateToNat(MinAbsoluteDate) then undefined 
-        else if result > absoluteDateToNat(MaxAbsoluteDate) then undefined 
+        elseif result > absoluteDateToNat(MaxAbsoluteDate) then undefined 
         else createFromAbsoluteDate(natToAbsoluteDate(result));
 
 -- addWeek adds a number of weeks to a date and returns the result.  Number of weeks can be
