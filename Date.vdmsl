@@ -14,7 +14,10 @@ imports
     from Year 
         values 
             MaxYear : nat1 renamed MaxYear;
-            MinYear : nat1 renamed MinYear,
+            MinYear : nat1 renamed MinYear;
+
+        functions 
+            isYear : nat1 -> bool renamed isYear,
 
     from Month
         types
@@ -26,6 +29,7 @@ imports
 
         functions
             daysInMonth: Month * nat1 -> nat1 renamed daysInMonth;
+            daysInMonths: Month * nat1 -> nat renamed daysInMonths;
             before: Month * Month -> bool;
             priorMonth: Month -> Month renamed priorMonth;
             nextMonth: Month -> Month renamed nextMonth,
@@ -71,7 +75,8 @@ imports
             yearFromAbsolute: AbsoluteDate -> nat renamed yearFromAbsolute;
             daysInPastYears: nat1 -> nat renamed daysInPastYears;
             natToAbsoluteDate: nat1 -> AbsoluteDate renamed natToAbsoluteDate;
-            absoluteDateToNat: AbsoluteDate -> nat1 renamed absoluteDateToNat;        
+            absoluteDateToNat: AbsoluteDate -> nat1 renamed absoluteDateToNat; 
+            isAbsoluteDate: AbsoluteDate -> bool renamed isAbsoluteDate;        
 
 exports types struct Date; Order; 
         functions   
@@ -161,27 +166,15 @@ isValidDate(month, day, year) ==
 dayOfYear: Date -> nat1
 dayOfYear(date) ==
     let 
-        finalMonth = getMonth(date),
+        month = getMonth(date),
         day = getDay(date),
         year = getYear(date),
-        daysMonths = daysInMonths(January, finalMonth, year, 0)
+        daysMonths = daysInMonths(month, year)
     in 
         daysMonths + day
+    pre isValidDate(date.month, date.day, date.year)
     post isDayOfYear(RESULT, date.year);
 
--- daysInMonths computes total days in all the months up to and including
--- the specified months.
-daysInMonths: Month * Month * nat1 * nat -> nat
-daysInMonths(currentMonth, finalMonth, year, initialDays) == 
-    if currentMonth = finalMonth then initialDays 
-
-    else 
-        let 
-            days = initialDays + daysInMonth(currentMonth, year),
-            nxtMonth = nextMonth(currentMonth)
-        in 
-            daysInMonths(nxtMonth, finalMonth, year, days)
-    measure is not yet specified;
 
 -- ----------------------------------------------------------------------------
 -- Constructors
@@ -203,7 +196,7 @@ createFromDayOfYear(dayYear, year) ==
         monthDay = dayOfYearToMonthDay(dayYear, year)
     in  
         create(monthDay.month, monthDay.day, year)
-pre isDayOfYear(dayOfYearToNat(dayYear), year)
+pre isDayOfYear(dayOfYearToNat(dayYear), year) and isYear(year)
 post isValidDate(RESULT.month, RESULT.day, RESULT.year);
 
 -- 
@@ -215,7 +208,8 @@ createFromAbsoluteDate(absoluteDate) ==
         year  = yearFromAbsolute(absoluteDate),
         dayYear = absoluteDateToNat(absoluteDate) - daysInPastYears(year)
     in 
-        createFromDayOfYear(natToDayOfYear(dayYear), year);
+        createFromDayOfYear(natToDayOfYear(dayYear), year)
+post isValidDate(RESULT.month, RESULT.day, RESULT.year);
 
 -- ----------------------------------------------------------------------------
 -- Properties
@@ -273,7 +267,9 @@ convertToAbsoluteDate(date) ==
         dayYear = dayOfYear(date)
     in
         natToAbsoluteDate(dayYear + daysInPastYears(getYear(date)))
-    measure is not yet specified;
+
+pre isValidDate(date.month, date.day, date.year)
+post isAbsoluteDate(RESULT);
 
 -- addDay adds a number of days equal to count to a date and returns the result.  Count can be negative, in which
 -- case, a number of days equal to count is subtracted from the date.  A positive count cannot be added to

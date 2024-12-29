@@ -39,6 +39,7 @@ exports
         natToMonth: nat1 -> Month;
         toString: Month -> seq of char;
         daysInMonth: Month * nat1 -> nat1;
+        daysInMonths: Month * nat1 -> nat;
         before: Month * Month -> bool;
         priorMonth: Month -> Month;
         nextMonth: Month -> Month;
@@ -176,6 +177,25 @@ daysInMonth: Month * nat1 -> nat1
 daysInMonth(month, year) ==
     if isLeapYear(year) and (month = <February>) then daysPerMonth(month) + 1
     else daysPerMonth(month);
+
+-- daysInMonths computes total days in all the months up to 
+-- the specified months.
+daysInMonths: Month * nat1 -> nat 
+daysInMonths(month, year) == 
+    calcDaysInMonths(January, month, year, 0);
+    
+calcDaysInMonths: Month * Month * nat1 * nat -> nat
+calcDaysInMonths(currentMonth, finalMonth, year, initialDays) == 
+    if currentMonth = finalMonth then initialDays 
+
+    else 
+        let 
+            days = initialDays + daysInMonth(currentMonth, year),
+            nxtMonth = nextMonth(currentMonth)
+        in 
+            calcDaysInMonths(nxtMonth, finalMonth, year, days)
+    measure is not yet specified;
+
 
 -- before returns true if the first month is before the second month. 
 before: Month * Month -> bool 

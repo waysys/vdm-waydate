@@ -16,6 +16,9 @@ imports
         values 
             MinYear : nat1 renamed MinYear; 
 
+        functions 
+            isYear : nat1 -> bool renamed isYear;
+
 exports 
     types
         AbsoluteDate;
@@ -29,6 +32,7 @@ exports
         daysInPastYears: nat1 -> nat
         natToAbsoluteDate: nat1 -> AbsoluteDate;
         absoluteDateToNat: AbsoluteDate -> nat1;
+        isAbsoluteDate: AbsoluteDate -> bool;
 
 definitions
 
@@ -38,6 +42,7 @@ types
 
 AbsoluteDate = nat1
 inv absoluteDate == absoluteDate >= 1 and absoluteDate <= 876216
+ord ad1 < ad2 == absoluteDateToNat(ad1) < absoluteDateToNat(ad2)
 
 -- ----------------------------------------------------------------------------
 values
@@ -54,6 +59,14 @@ DaysIn1YearCycle   = 365;
 -- ----------------------------------------------------------------------------
 functions
 -- ----------------------------------------------------------------------------
+
+-- isAbsoluteDate returns true if the value is between MinAbsoluteDate and 
+-- MaxAbsoluteDate. 
+isAbsoluteDate: AbsoluteDate -> bool 
+isAbsoluteDate(value) == 
+    if value < MinAbsoluteDate then false 
+    elseif value > MaxAbsoluteDate then false 
+    else true;
 
 -- natToAbsoluteDate returns an absolute date confirming to the specified natural number.
 -- This function is needed in other modules that import this module.
@@ -87,7 +100,9 @@ yearFromAbsolute(absoluteDate) ==
         if ((num100YearCycles = 4) or (num1YearCycles = 4)) then
 			400 * num400YearCycles + 100 * num100YearCycles + 4 * num4YearCycles + num1YearCycles + 1600
 		else
-			400 * num400YearCycles + 100 * num100YearCycles + 4 * num4YearCycles + num1YearCycles + 1601;
+			400 * num400YearCycles + 100 * num100YearCycles + 4 * num4YearCycles + num1YearCycles + 1601
+pre isAbsoluteDate(absoluteDate)
+post isYear(RESULT);
 
 
 -- daysInPastYears computes the number of days starting in 1-Jan-1601 and ending 
@@ -104,6 +119,8 @@ daysInPastYears(year) ==
         365 * y  -- days in prior years if all years had 365 days
              + y div 4    -- plus julian leap days in prior years if all years divided by 4 were leap years
              - y div 100  -- minus prior century years if all years divisible by 100 were not leap years
-             + y div 400; -- plus years divisible by 400 which have leap days
+             + y div 400 -- plus years divisible by 400 which have leap days 
+pre isYear(year) 
+post RESULT >= 0;
 
 end AbsoluteDate
